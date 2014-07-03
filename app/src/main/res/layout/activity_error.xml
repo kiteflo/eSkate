@@ -1,0 +1,30 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.sobag.parsetemplate.ErrorActivity">
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:src="@raw/bg_error"
+        android:scaleType="centerCrop"/>
+    <TextView
+        android:tag="tv_title"
+        android:id="@+id/tv_title"
+        android:gravity="center"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Something went wrong"
+        style="@style/title_text"/>
+    <TextView
+        android:tag="tv_subtitle"
+        android:id="@+id/tv_subtitle"
+        android:gravity="center"
+        android:layout_below="@+id/tv_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Please try again later..."
+        style="@style/subtitle_text"/>
+</RelativeLayout>

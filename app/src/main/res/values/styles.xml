@@ -1,0 +1,84 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <!-- example...error page title -->
+    <style name="title_text">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">10</item>
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:paddingBottom">20dp</item>
+    </style>
+
+    <!-- example...error page subTitle -->
+    <style name="subtitle_text">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">10</item>
+        <item name="android:paddingTop">20dp</item>
+    </style>
+
+    <!-- example...FB Signup button signup page -->
+    <style name="button_text_huge">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">25dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingLeft">25dp</item>
+        <item name="android:paddingRight">25dp</item>
+    </style>
+
+    <!-- editable textfield...see email signup... -->
+    <style name="editTextField">
+        <item name="android:textColorHint">@color/hint_grey</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/edittext_selector</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
+    <!-- signup button with icon...crappy stuff....see email signup... -->
+    <style name="signup_button_with_icon">
+        <item name="android:background">@drawable/green_button_selector</item>
+    </style>
+    <style name="signup_button_with_icon_text">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20dp</item>
+    </style>
+
+    <!-- FB login button with icon...crappy stuff...see login... -->
+    <style name="fb_signup_button_with_icon">
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:background">@drawable/fb_button_selector</item>
+    </style>
+    <style name="fb_signup_button_with_icon_text">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20dp</item>
+    </style>
+
+    <style name="green_button">
+        <item name="android:background">@drawable/green_button_selector</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20dp</item>
+    </style>
+
+    <style name="black_button">
+        <item name="android:background">@drawable/black_button_selector</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20dp</item>
+    </style>
+
+</resources>
