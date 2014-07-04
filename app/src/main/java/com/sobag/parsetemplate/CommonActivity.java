@@ -2,9 +2,12 @@ package com.sobag.parsetemplate;
 
 import android.app.ActionBar;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
@@ -35,8 +38,7 @@ public class CommonActivity extends RoboActivity
     {
         super.onCreate(savedInstanceState);
 
-        // disable actionbar title...
-        //ActionBar actionBar = getActionBar();
+        // apply custom font to action bar...
         int titleId = getResources().getIdentifier("action_bar_title", "id",
                 "android");
         TextView yourTextView = (TextView) findViewById(titleId);
