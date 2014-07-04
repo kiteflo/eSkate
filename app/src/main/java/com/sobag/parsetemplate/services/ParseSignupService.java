@@ -13,6 +13,7 @@ import com.parse.SignUpCallback;
 import com.sobag.parsetemplate.R;
 import com.sobag.parsetemplate.domain.User;
 import com.sobag.parsetemplate.util.PreferenceProps;
+import com.sobag.parsetemplate.util.SharedPreferencesUtility;
 
 import javax.inject.Provider;
 
@@ -66,7 +67,7 @@ public class ParseSignupService
                 if (e == null)
                 {
                     listener.handleSuccessfulSignup();
-                    unvirginUser();
+                    new SharedPreferencesUtility(contextProvider.get()).unvirginUser();
                 }
                 else
                 {
@@ -89,7 +90,7 @@ public class ParseSignupService
                     listener.handleSignupError(err);
                 } else if (user.isNew()) {
                     listener.handleSuccessfulSignup();
-                    unvirginUser();
+                    new SharedPreferencesUtility(contextProvider.get()).unvirginUser();
                 } else {
                     listener.handleSuccessfulSignup();
                 }
@@ -100,18 +101,6 @@ public class ParseSignupService
     // ------------------------------------------------------------------------
     // private usage
     // ------------------------------------------------------------------------
-
-    /**
-     * Make this user a real man...by remnoving the virgin signup flag!
-     */
-    private void unvirginUser()
-    {
-        String filename = contextProvider.get().getString(R.string.preferencesFile);
-        SharedPreferences preferences = contextProvider.get().getSharedPreferences(filename,
-                Context.MODE_PRIVATE);
-
-        preferences.edit().putBoolean(PreferenceProps.IS_VIRGIN,false).commit();
-    }
 
     // ------------------------------------------------------------------------
     // inner classes

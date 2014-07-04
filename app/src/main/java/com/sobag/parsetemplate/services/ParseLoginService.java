@@ -10,6 +10,7 @@ import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.sobag.parsetemplate.LaunchActivity;
+import com.sobag.parsetemplate.util.SharedPreferencesUtility;
 
 import javax.inject.Provider;
 
@@ -58,6 +59,13 @@ public class ParseLoginService
                 else
                 {
                     listener.handleSuccessfulLogin();
+
+                    // user still might be virgin user...
+                    SharedPreferencesUtility sharedPrefsUtility = new SharedPreferencesUtility(contextProvider.get());
+                    if (sharedPrefsUtility.checkIfFirstTimeAccess())
+                    {
+                        sharedPrefsUtility.unvirginUser();
+                    }
                 }
             }
         });
