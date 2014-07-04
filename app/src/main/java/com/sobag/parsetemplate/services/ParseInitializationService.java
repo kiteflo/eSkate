@@ -14,6 +14,7 @@ import com.parse.ParseUser;
 import com.sobag.parsetemplate.domain.User;
 import com.sobag.parsetemplate.util.PreferenceProps;
 import com.sobag.parsetemplate.R;
+import com.sobag.parsetemplate.util.SharedPreferencesUtility;
 
 import java.util.List;
 
@@ -87,18 +88,9 @@ public class ParseInitializationService
         return (User)ParseUser.getCurrentUser();
     }
 
-    /**
-     * Check whether user is first time accessor
-     * @return
-     * true in case of virgin access, else false will be returned.
-     */
     public boolean checkIfFirstTimeAccess()
     {
-        String filename = contextProvider.get().getString(R.string.preferencesFile);
-        SharedPreferences preferences = contextProvider.get().getSharedPreferences(filename,
-                Context.MODE_PRIVATE);
-
-        return preferences.getBoolean(PreferenceProps.IS_VIRGIN,true);
+        return new SharedPreferencesUtility(contextProvider.get()).checkIfFirstTimeAccess();
     }
 
     // ------------------------------------------------------------------------

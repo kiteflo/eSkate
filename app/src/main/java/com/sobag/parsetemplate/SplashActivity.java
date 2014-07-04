@@ -8,6 +8,7 @@ import android.widget.ProgressBar;
 import com.google.inject.Inject;
 import com.sobag.parsetemplate.services.InitializationListener;
 import com.sobag.parsetemplate.services.ParseInitializationService;
+import com.sobag.parsetemplate.util.SharedPreferencesUtility;
 
 import javax.annotation.Nullable;
 
