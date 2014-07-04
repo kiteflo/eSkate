@@ -8,7 +8,6 @@ import android.widget.ProgressBar;
 import com.google.inject.Inject;
 import com.sobag.parsetemplate.services.InitializationListener;
 import com.sobag.parsetemplate.services.ParseInitializationService;
-import com.sobag.parsetemplate.util.SharedPreferencesUtility;
 
 import javax.annotation.Nullable;
 
@@ -84,7 +83,7 @@ public class SplashActivity extends RoboActivity
             else
             {
                 // display main screen...
-                Intent loginIntent = new Intent(this, MainActivity.class);
+                Intent loginIntent = new Intent(this, MyRidesActivity.class);
                 startActivity(loginIntent);
             }
         }

@@ -179,7 +179,7 @@ public class SignupActivity extends CommonHeadlessActivity
         // display loading indicator...
         progressBar.setVisibility(View.GONE);
 
-        Intent mainActivityIntent = new Intent(this,MainActivity.class);
+        Intent mainActivityIntent = new Intent(this,MyRidesActivity.class);
         startActivity(mainActivityIntent);
 
         finish();
