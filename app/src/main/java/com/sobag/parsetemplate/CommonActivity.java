@@ -1,9 +1,14 @@
 package com.sobag.parsetemplate;
 
 import android.app.ActionBar;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.inject.Inject;
 import com.sobag.parsetemplate.services.ParseLoginService;
@@ -33,12 +38,15 @@ public class CommonActivity extends RoboActivity
     {
         super.onCreate(savedInstanceState);
 
-        // disable actionbar title...
-        ActionBar actionBar = getActionBar();
-        if (actionBar != null)
-        {
-            actionBar.setDisplayShowTitleEnabled(false);
-        }
+        // apply custom font to action bar...
+        int titleId = getResources().getIdentifier("action_bar_title", "id",
+                "android");
+        TextView yourTextView = (TextView) findViewById(titleId);
+        yourTextView.setTextColor(getResources().getColor(R.color.white));
+
+        String desiredFont = getString(R.string.default_font);
+        Typeface typeface = Typeface.createFromAsset(getAssets(),desiredFont);
+        yourTextView.setTypeface(typeface);
     }
 
     @Override

@@ -41,7 +41,10 @@
     <string name="error_text">Server outage...sorry!</string>
 
     <!-- main page -->
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Main Activity</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+
 
     <!-- FB login -->
     <string name="title_facebook_login">Facebook Login</string>
