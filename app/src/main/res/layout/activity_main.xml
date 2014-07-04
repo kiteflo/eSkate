@@ -9,12 +9,21 @@
         android:layout_height="fill_parent"
         android:weightSum="1.0"
         android:orientation="vertical">
-        <ImageView
+        <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.3"
-            android:src="@raw/my_ride"
-            android:scaleType="centerCrop"/>
+            android:layout_weight="0.3">
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:src="@raw/my_ride"
+                android:scaleType="centerCrop"/>
+            <ImageView
+                android:padding="30dp"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:src="@raw/add_button"/>
+        </RelativeLayout>
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
