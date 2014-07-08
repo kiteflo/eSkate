@@ -83,7 +83,7 @@ public class SplashActivity extends RoboActivity
             else
             {
                 // display main screen...
-                Intent loginIntent = new Intent(this, MyRidesActivity.class);
+                Intent loginIntent = new Intent(this, RidesActivity.class);
                 startActivity(loginIntent);
             }
         }

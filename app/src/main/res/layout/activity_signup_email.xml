@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.sobag.parsetemplate.SignupActivity"
-    android:background="@color/background_black">
+    android:background="@color/default_background">
 
     <TextView
         android:tag="tv_title"

@@ -40,15 +40,18 @@
     <string name="title_activity_error">ErrorActivity</string>
     <string name="error_text">Server outage...sorry!</string>
 
-    <!-- main page -->
-    <string name="title_activity_main">Main Activity</string>
-    <string name="drawer_open">Open</string>
-    <string name="drawer_close">Close</string>
-
-
     <!-- FB login -->
     <string name="title_facebook_login">Facebook Login</string>
     <string name="title_activity_signup_email">SignupEmailActivity</string>
     <string name="title_activity_launch">LaunchActivity</string>
+    <string name="hello_world">Hello world!</string>
+
+    <!-- ride overview page -->
+    <string name="title_activity_rides">my rides</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+
+    <!-- ride init page -->
+    <string name="title_activity_init_ride">Prepare ride...</string>
 
 </resources>
