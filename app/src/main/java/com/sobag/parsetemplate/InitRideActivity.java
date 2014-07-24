@@ -1,20 +1,19 @@
 package com.sobag.parsetemplate;
 
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
-import com.sobag.parsetemplate.R;
+import com.makeramen.RoundedImageView;
 import com.sobag.parsetemplate.domain.Board;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
 import com.sobag.parsetemplate.lists.BoardListAdapter;
-import com.sobag.parsetemplate.services.ParseLoginService;
 import com.sobag.parsetemplate.services.ParseRequestService;
 import com.sobag.parsetemplate.services.RequestListener;
 import com.sobag.parsetemplate.util.FontUtility;
@@ -37,14 +36,18 @@ public class InitRideActivity extends CommonActivity
     @InjectView(tag = "progressBar")
     ProgressBar progressBar;
 
-    @InjectView(tag = "tv_board")
-    TextView tvBoard;
-
     @Inject
     FontUtility fontUtility;
 
     @Inject
     ParseRequestService parseRequestService;
+
+    @InjectView(tag = "tv_board")
+    TextView tvBoard;
+    @InjectView(tag = "tv_next")
+    TextView tvNext;
+
+    private View currentlySelectedItem = null;
 
     // ------------------------------------------------------------------------
     // public usage
@@ -56,13 +59,22 @@ public class InitRideActivity extends CommonActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init_ride);
 
-        fontUtility.applyFontToComponent(tvBoard,R.string.button_font,
+        // apply fonts
+        fontUtility.applyFontToComponent(tvBoard,R.string.default_font,
+                FontApplicableComponent.TEXT_VIEW);
+        fontUtility.applyFontToComponent(tvNext,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
 
         // fetch boards...
         // display loading indicator...
         progressBar.setVisibility(View.VISIBLE);
         parseRequestService.fetchBoards(this);
+    }
+
+    public void onNext(View view)
+    {
+        Intent locationActivityIntent = new Intent(this,LocationActivity.class);
+        startActivity(locationActivityIntent);
     }
 
     // ------------------------------------------------------------------------
@@ -89,6 +101,33 @@ public class InitRideActivity extends CommonActivity
         // fetch UI container and mixin contents...
         ListView lvBoards = (ListView)findViewById(R.id.lv_boards);
         lvBoards.setAdapter(bla);
+
+        // add click handler...
+        lvBoards.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                int apiVersion = Build.VERSION.SDK_INT;
+
+                if (currentlySelectedItem != null)
+                {
+                    TextView tvTitlePrevious = (TextView)currentlySelectedItem.findViewById(R.id.tv_title);
+                    tvTitlePrevious.setAlpha(0.5f);
+                    RoundedImageView ivImagePrevious = (RoundedImageView)currentlySelectedItem.findViewById(R.id.iv_image);
+                    ivImagePrevious.setImageAlpha(120);
+                    ivImagePrevious.setBorderColor(getResources().getColor(R.color.hint_grey));
+                }
+
+                TextView tvTitle = (TextView)view.findViewById(R.id.tv_title);
+                tvTitle.setAlpha(1.0f);
+                RoundedImageView ivImage = (RoundedImageView)view.findViewById(R.id.iv_image);
+                ivImage.setImageAlpha(255);
+                ivImage.setBorderColor(getResources().getColor(R.color.poisonGreen));
+
+                currentlySelectedItem = view;
+            }
+        });
     }
 
     @Override

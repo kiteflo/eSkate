@@ -1,22 +1,14 @@
 package com.sobag.parsetemplate.lists;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.inject.Inject;
 import com.makeramen.RoundedImageView;
 import com.parse.ParseException;
 import com.sobag.parsetemplate.R;
@@ -25,8 +17,6 @@ import com.sobag.parsetemplate.enums.FontApplicableComponent;
 import com.sobag.parsetemplate.util.FontUtility;
 
 import java.util.List;
-
-import roboguice.inject.InjectView;
 
 public class BoardListAdapter extends ArrayAdapter<Board>
 {
@@ -68,7 +58,7 @@ public class BoardListAdapter extends ArrayAdapter<Board>
         tvTitle.setText(board.getTitle());
 
         // apply font...
-        fontUtility.applyFontToComponent(tvTitle,R.string.button_font,
+        fontUtility.applyFontToComponent(tvTitle,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
 
         // setup image...
@@ -77,6 +67,7 @@ public class BoardListAdapter extends ArrayAdapter<Board>
         {
             Bitmap bitmap = BitmapFactory.decodeByteArray(board.getImage().getData(), 0, board.getImage().getData().length);
             ivImage.setImageBitmap(bitmap);
+            ivImage.setImageAlpha(120);
         }
         catch (ParseException ex)
         {

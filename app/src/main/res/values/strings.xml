@@ -52,6 +52,11 @@
 
     <!-- ride init page -->
     <string name="title_activity_init_ride">Prepare ride...</string>
-    <string name="activity_init_ride_board">CHOSE YOUR BOARD</string>
+    <string name="activity_init_ride_board">SELECT YOUR WEAPON</string>
+    <string name="but_next">next...</string>
 
+    <!-- location page -->
+    <string name="title_activity_location">Prepare ride...</string>
+    <string name="subtitle_location">YOUR LOCATION</string>
+    <string name="but_start">start ride!</string>
 </resources>

@@ -14,7 +14,7 @@
         android:scaleType="centerCrop"
         app:corner_radius="30dp"
         app:border_width="1dp"
-        app:border_color="@color/poisonGreen"
+        app:border_color="@color/hint_grey"
         android:layout_gravity="center_vertical"
         />
     <TextView
@@ -25,5 +25,6 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:padding="10dp"
+        android:alpha="0.5"
         />
 </RelativeLayout>

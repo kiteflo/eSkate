@@ -89,7 +89,7 @@
     <!-- LABELS                                                                  -->
     <!-- *********************************************************************** -->
 
-    <style name="section_title_board">
+    <style name="section_title">
         <item name="android:textColor">@color/hint_grey</item>
         <item name="android:paddingTop">30dp</item>
         <item name="android:paddingLeft">10dp</item>

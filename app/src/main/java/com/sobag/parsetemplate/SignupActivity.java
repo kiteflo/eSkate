@@ -78,19 +78,19 @@ public class SignupActivity extends CommonHeadlessActivity
         setContentView(R.layout.activity_signup_email);
 
         // apply font...
-        fontUtility.applyFontToComponent(tvTitle,R.string.button_font,
+        fontUtility.applyFontToComponent(tvTitle,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
-        fontUtility.applyFontToComponent(etUsername,R.string.button_font,
+        fontUtility.applyFontToComponent(etUsername,R.string.default_font,
                 FontApplicableComponent.EDIT_TEXT);
-        fontUtility.applyFontToComponent(etEmail,R.string.button_font,
+        fontUtility.applyFontToComponent(etEmail,R.string.default_font,
                 FontApplicableComponent.EDIT_TEXT);
-        fontUtility.applyFontToComponent(etPassword,R.string.button_font,
+        fontUtility.applyFontToComponent(etPassword,R.string.default_font,
                 FontApplicableComponent.EDIT_TEXT);
-        fontUtility.applyFontToComponent(etPasswordRepeat,R.string.button_font,
+        fontUtility.applyFontToComponent(etPasswordRepeat,R.string.default_font,
                 FontApplicableComponent.EDIT_TEXT);
-        fontUtility.applyFontToComponent(tvFbButtonLabel,R.string.button_font,
+        fontUtility.applyFontToComponent(tvFbButtonLabel,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
-        fontUtility.applyFontToComponent(tvSignupButtonLabel,R.string.button_font,
+        fontUtility.applyFontToComponent(tvSignupButtonLabel,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
 
         // init validator....

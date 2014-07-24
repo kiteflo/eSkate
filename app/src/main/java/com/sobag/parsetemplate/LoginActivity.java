@@ -77,17 +77,17 @@ public class LoginActivity extends CommonHeadlessActivity
         setContentView(R.layout.activity_login);
 
         // apply font...
-        fontUtility.applyFontToComponent(tvTitle,R.string.button_font,
+        fontUtility.applyFontToComponent(tvTitle,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
-        fontUtility.applyFontToComponent(tvFbButtonLabel,R.string.button_font,
+        fontUtility.applyFontToComponent(tvFbButtonLabel,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
-        fontUtility.applyFontToComponent(tvOr,R.string.default_font,
+        fontUtility.applyFontToComponent(tvOr,R.string.second_font,
                 FontApplicableComponent.TEXT_VIEW);
-        fontUtility.applyFontToComponent(etUsername,R.string.button_font,
+        fontUtility.applyFontToComponent(etUsername,R.string.default_font,
                 FontApplicableComponent.EDIT_TEXT);
-        fontUtility.applyFontToComponent(etPassword,R.string.button_font,
+        fontUtility.applyFontToComponent(etPassword,R.string.default_font,
                 FontApplicableComponent.EDIT_TEXT);
-        fontUtility.applyFontToComponent(tvLoginButtonLabel,R.string.button_font,
+        fontUtility.applyFontToComponent(tvLoginButtonLabel,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
 
         // init validator....

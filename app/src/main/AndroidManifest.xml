@@ -8,6 +8,10 @@
         android:label="eSkate"
         android:logo="@android:color/transparent"
         android:theme="@style/AppTheme" >
+
+        <!-- google maps -->
+        <uses-library android:name="com.google.android.maps"/>
+
         <activity
             android:name=".SplashActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
@@ -43,6 +47,10 @@
         <activity
             android:name=".RidesActivity"
             android:label="@string/title_activity_rides" >
+        </activity>
+        <activity
+            android:name=".LocationActivity"
+            android:label="@string/title_activity_location" >
         </activity>
     </application>
 

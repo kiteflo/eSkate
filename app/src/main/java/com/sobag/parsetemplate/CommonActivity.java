@@ -1,13 +1,9 @@
 package com.sobag.parsetemplate;
 
-import android.app.ActionBar;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
@@ -44,7 +40,7 @@ public class CommonActivity extends RoboActivity
         TextView yourTextView = (TextView) findViewById(titleId);
         yourTextView.setTextColor(getResources().getColor(R.color.white));
 
-        String desiredFont = getString(R.string.default_font);
+        String desiredFont = getString(R.string.second_font);
         Typeface typeface = Typeface.createFromAsset(getAssets(),desiredFont);
         yourTextView.setTypeface(typeface);
     }

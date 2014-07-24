@@ -9,7 +9,7 @@
     <TextView
         android:tag="tv_board"
         android:id="@+id/tv_board"
-        style="@style/section_title_board"
+        style="@style/section_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/activity_init_ride_board"/>
@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         style="@style/signup_button_with_icon"
         android:clickable="true"
-        android:onClick="onCreateRide"
+        android:onClick="onNext"
         android:layout_alignParentBottom="true"
         >
         <ImageView
@@ -50,14 +50,14 @@
             android:padding="5dp"
             />
         <TextView
-            android:tag="tv_new_ride_label"
-            android:id="@+id/tv_new_ride_label"
+            android:tag="tv_next"
+            android:id="@+id/tv_next"
             style="@style/signup_button_with_icon_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="false"
             android:background="#00000000"
-            android:text="@string/but_new_ride"
+            android:text="@string/but_next"
             android:layout_centerInParent="true"
             />
     </RelativeLayout>

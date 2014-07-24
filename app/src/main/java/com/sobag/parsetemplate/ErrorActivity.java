@@ -1,8 +1,6 @@
 package com.sobag.parsetemplate;
 
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
@@ -36,9 +34,9 @@ public class ErrorActivity extends CommonHeadlessActivity
         setContentView(R.layout.activity_error);
 
         // apply font...
-        fontUtility.applyFontToComponent(tvTitle,R.string.default_font,
+        fontUtility.applyFontToComponent(tvTitle,R.string.second_font,
                 FontApplicableComponent.TEXT_VIEW);
-        fontUtility.applyFontToComponent(tvSubtitle,R.string.default_font,
+        fontUtility.applyFontToComponent(tvSubtitle,R.string.second_font,
                 FontApplicableComponent.TEXT_VIEW);
     }
 }
