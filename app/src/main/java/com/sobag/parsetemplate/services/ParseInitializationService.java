@@ -11,6 +11,7 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.sobag.parsetemplate.domain.Board;
 import com.sobag.parsetemplate.domain.User;
 import com.sobag.parsetemplate.util.PreferenceProps;
 import com.sobag.parsetemplate.R;
@@ -64,6 +65,7 @@ public class ParseInitializationService
 
         // register subclasses...
         ParseObject.registerSubclass(User.class);
+        ParseObject.registerSubclass(Board.class);
 
         // actually parse does not provide a way of checking whether initialization failed
         // or not :( - so parse will always be initialized successfully right here...

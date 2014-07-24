@@ -48,10 +48,10 @@
 
     <!-- ride overview page -->
     <string name="title_activity_rides">my rides</string>
-    <string name="drawer_open">Open</string>
-    <string name="drawer_close">Close</string>
+    <string name="but_new_ride">start new ride</string>
 
     <!-- ride init page -->
     <string name="title_activity_init_ride">Prepare ride...</string>
+    <string name="activity_init_ride_board">CHOSE YOUR BOARD</string>
 
 </resources>

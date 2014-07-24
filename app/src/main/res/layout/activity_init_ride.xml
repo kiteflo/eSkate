@@ -3,45 +3,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.sobag.parsetemplate.InitRideActivity"
-    android:background="@color/default_background">
+    android:background="@color/default_background"
+    >
 
-    <EditText
-        android:tag="et_username"
-        android:id="@+id/et_username"
+    <TextView
+        android:tag="tv_board"
+        android:id="@+id/tv_board"
+        style="@style/section_title_board"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_username_short"
-        android:drawableLeft="@drawable/ic_action_user"
-        style="@style/editTextField"
-        android:singleLine="true"/>
-
-    <EditText
-        android:tag="et_password"
-        android:id="@+id/et_password"
-        android:layout_below="@+id/et_username"
+        android:text="@string/activity_init_ride_board"/>
+    <View
+        style="@style/section_title_board_divider"
+        android:id="@+id/view_tv_board_divider"
+        android:layout_below="@+id/tv_board"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:password="true"
-        android:drawableLeft="@drawable/ic_action_lock_closed"
-        android:hint="@string/hint_pw"
-        style="@style/editTextField"
-        android:singleLine="true"
-        android:inputType="textPassword"
+        android:layout_height="0.5dp"
         />
+    <ListView
+        android:id="@+id/lv_boards"
+        android:layout_below="@+id/tv_board"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:padding="10dp"
+        android:divider="@drawable/list_divider"
+        android:dividerHeight="1px"
+        android:layout_above="@+id/custom_button">
+    </ListView>
 
     <RelativeLayout
-        android:id="@+id/but_signup"
-        android:layout_below="@id/et_password"
+        android:id="@+id/custom_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         style="@style/signup_button_with_icon"
         android:clickable="true"
-        android:gravity="center"
-        android:padding="5dp"
-        android:onClick="onLogin"
+        android:onClick="onCreateRide"
+        android:layout_alignParentBottom="true"
         >
         <ImageView
-            android:id="@+id/iv_fbIconTemp"
             android:layout_centerInParent="true"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
@@ -49,17 +48,16 @@
             android:clickable="false"
             android:background="#00000000"
             android:padding="5dp"
-            android:visibility="invisible"
             />
         <TextView
-            android:tag="tv_login_button_label"
-            android:id="@+id/tv_login_label"
+            android:tag="tv_new_ride_label"
+            android:id="@+id/tv_new_ride_label"
             style="@style/signup_button_with_icon_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="false"
             android:background="#00000000"
-            android:text="@string/but_login"
+            android:text="@string/but_new_ride"
             android:layout_centerInParent="true"
             />
     </RelativeLayout>

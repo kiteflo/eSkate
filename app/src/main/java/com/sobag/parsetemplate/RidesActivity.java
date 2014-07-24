@@ -1,36 +1,53 @@
 package com.sobag.parsetemplate;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.sobag.parsetemplate.R;
+import android.view.View;
+import android.widget.TextView;
 
-public class RidesActivity extends ActionBarActivity {
+import com.google.inject.Inject;
+import com.sobag.parsetemplate.R;
+import com.sobag.parsetemplate.enums.FontApplicableComponent;
+import com.sobag.parsetemplate.util.FontUtility;
+
+import roboguice.inject.InjectView;
+
+public class RidesActivity extends CommonActivity
+{
+    // ------------------------------------------------------------------------
+    // members
+    // ------------------------------------------------------------------------
+
+    @InjectView(tag = "tv_new_ride_label")
+    TextView tvNewRideButtonLabel;
+
+    @Inject
+    FontUtility fontUtility;
+
+    // ------------------------------------------------------------------------
+    // default stuff
+    // ------------------------------------------------------------------------
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rides);
+
+        fontUtility.applyFontToComponent(tvNewRideButtonLabel,R.string.button_font,
+                FontApplicableComponent.TEXT_VIEW);
     }
 
+    // ------------------------------------------------------------------------
+    // public usage
+    // ------------------------------------------------------------------------
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.rides, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    public void onCreateRide(View view)
+    {
+        Intent initRideActivity = new Intent(this,InitRideActivity.class);
+        startActivity(initRideActivity);
     }
 }

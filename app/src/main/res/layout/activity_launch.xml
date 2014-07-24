@@ -37,7 +37,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/but_login"
-            style="@style/black_button"
+            style="@style/black_button_on_startscreen"
             android:onClick="onLogin"
             android:layout_weight="0.5"/>
         <Button
@@ -46,7 +46,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/but_register"
-            style="@style/green_button"
+            style="@style/green_button_on_startscreen"
             android:onClick="onSignup"
             android:layout_weight="0.5"/>
     </LinearLayout>

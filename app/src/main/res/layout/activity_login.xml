@@ -95,7 +95,6 @@
         style="@style/signup_button_with_icon"
         android:clickable="true"
         android:gravity="center"
-        android:padding="5dp"
         android:onClick="onLogin"
         >
         <ImageView
