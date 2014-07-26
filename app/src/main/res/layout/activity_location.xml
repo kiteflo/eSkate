@@ -11,19 +11,24 @@
         android:layout_height="fill_parent"
         android:orientation="vertical"
         android:weightSum="1.0"
-        android:layout_above="@+id/custom_button">
+        android:layout_above="@+id/custom_button"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        >
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
             android:orientation="vertical"
-            android:layout_weight="0.5">
+            android:layout_weight="0.5"
+            >
             <TextView
                 android:tag="tv_location"
                 android:id="@+id/tv_location"
-                style="@style/section_title"
+                style="@style/section_title_top"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/subtitle_location"/>
+                android:text="@string/subtitle_location"
+                android:paddingTop="30dp"/>
             <View
                 style="@style/section_title_board_divider"
                 android:id="@+id/view_divider"
@@ -37,59 +42,136 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:name="com.google.android.gms.maps.MapFragment"
-                android:layout_margin="10dp"/>
+                android:layout_marginTop="10dp"
+                />
         </LinearLayout>
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:orientation="vertical"
-            android:layout_weight="0.5">
-            <TextView
-                android:tag="tv_image"
-                android:id="@+id/tv_image"
-                style="@style/section_title"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:paddingTop="20dp"
+            >
+            <RelativeLayout
+                android:id="@+id/rl_header"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/subtitle_image"/>
-            <View
-                style="@style/section_title_board_divider"
-                android:id="@+id/another_view_divider"
-                android:layout_below="@+id/tv_image"
-                android:layout_width="fill_parent"
-                android:layout_height="0.5dp"
-                />
+                >
+                <TextView
+                    android:tag="tv_image"
+                    android:id="@+id/tv_image"
+                    style="@style/section_title_bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/subtitle_image"
+                    android:layout_alignParentLeft="true"
+                    />
+                <View
+                    style="@style/section_title_board_divider"
+                    android:id="@+id/another_view_divider"
+                    android:layout_below="@+id/tv_image"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.5dp"
+                    />
+                <!--<ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/camera_512"
+                    android:layout_above="@+id/another_view_divider"
+                    android:layout_alignParentRight="true"/>-->
+            </RelativeLayout>
+
             <HorizontalScrollView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/horizontalScrollView">
+                android:id="@+id/horizontalScrollView"
+                android:layout_below="@+id/rl_header"
+                >
                 <LinearLayout
+                    android:tag="ll_slider"
+                    android:id="@+id/ll_slider"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_gravity="center_horizontal">
-                    <ImageView
+                    >
+                    <RelativeLayout
+                        android:tag="rl_takenImageContainer"
+                        android:id="@+id/rl_takenImageContainer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/dina4"
-                        android:padding="10dp"/>
-                    <ImageView
+                        android:visibility="gone"
+                        android:layout_margin="10dp">
+                        <ImageView
+                            android:tag="iv_takenImage"
+                            android:id="@+id/iv_takenImage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/image_button_plus"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:scaleType="fitXY"
+                            android:onClick="onTakeImage"/>
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:tag="rl_plus_container"
+                        android:id="@+id/rl_plus_container"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/dina4"
-                        android:padding="10dp"/>
-                    <ImageView
+                        android:layout_margin="10dp">
+                        <ImageView
+                            android:tag="iv_reference"
+                            android:id="@+id/iv_reference"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/image_button_plus"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:scaleType="centerInside"
+                            android:onClick="onTakeImage"/>
+                    </RelativeLayout>
+                    <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/dina4"
-                        android:padding="10dp"/>
-                    <ImageView
+                        android:layout_margin="10dp">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/dina4_flickr"
+                            android:adjustViewBounds="true"
+                            android:layout_centerInParent="true"
+                            android:scaleType="fitXY"
+                            />
+                    </RelativeLayout>
+                    <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/dina4"
-                        android:padding="10dp"/>
+                        android:layout_margin="10dp">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/dina4_flickr"
+                            android:adjustViewBounds="true"
+                            android:layout_centerInParent="true"
+                            android:scaleType="fitXY"/>
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/dina4_flickr"
+                            android:adjustViewBounds="true"
+                            android:layout_centerInParent="true"
+                            android:scaleType="fitXY"/>
+                    </RelativeLayout>
                 </LinearLayout>
             </HorizontalScrollView>
-        </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 
     <RelativeLayout

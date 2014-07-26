@@ -2,14 +2,19 @@ package com.sobag.parsetemplate;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,10 +53,21 @@ public class LocationActivity extends CommonActivity
     TextView tvLocation;
     @InjectView(tag = "tv_start")
     TextView tvStart;
+    @InjectView(tag = "ll_slider")
+    LinearLayout ll_slider;
+    @InjectView(tag = "iv_takenImage")
+    ImageView iv_takenImage;
+    @InjectView(tag = "iv_reference")
+    ImageView iv_reference;
+    @InjectView(tag = "rl_takenImageContainer")
+    RelativeLayout rl_takenImageContainer;
 
     private GoogleMap map = null;
     private LocationManager locationManager = null;
     private Marker marker = null;
+
+    // statics
+    public static int CAPTURE_IMAGE_RESULT = 49; // why 47? just like this number...
 
     // ------------------------------------------------------------------------
     // default stuff...
@@ -75,9 +91,32 @@ public class LocationActivity extends CommonActivity
         checkLocationServices();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == CAPTURE_IMAGE_RESULT && resultCode == RESULT_OK)
+        {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+
+            rl_takenImageContainer.setVisibility(View.VISIBLE);
+            iv_takenImage.setImageBitmap(photo);
+
+            // apply width & height
+            iv_takenImage.getLayoutParams().width = iv_reference.getWidth();
+            iv_takenImage.getLayoutParams().height = iv_reference.getHeight();
+
+        }
+    }
+
     // ------------------------------------------------------------------------
     // public usage
     // ------------------------------------------------------------------------
+
+    public void onTakeImage(View view)
+    {
+        Intent cameraInent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraInent, CAPTURE_IMAGE_RESULT);
+    }
 
     // ------------------------------------------------------------------------
     // private usage

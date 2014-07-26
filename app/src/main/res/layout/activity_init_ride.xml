@@ -9,7 +9,7 @@
     <TextView
         android:tag="tv_board"
         android:id="@+id/tv_board"
-        style="@style/section_title"
+        style="@style/section_title_top"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/activity_init_ride_board"/>
