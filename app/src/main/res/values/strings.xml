@@ -59,4 +59,6 @@
     <string name="title_activity_location">Prepare ride...</string>
     <string name="subtitle_location">YOUR LOCATION</string>
     <string name="but_start">start ride!</string>
+    <string name="msg_location_not_available">Cant determine your geo position :(</string>
+    <string name="subtitle_image">STARTPOINT IMAGE(S)</string>
 </resources>

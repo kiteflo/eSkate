@@ -69,6 +69,7 @@ public class InitRideActivity extends CommonActivity
         // display loading indicator...
         progressBar.setVisibility(View.VISIBLE);
         parseRequestService.fetchBoards(this);
+
     }
 
     public void onNext(View view)
