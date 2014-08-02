@@ -3,11 +3,15 @@ package com.sobag.parsetemplate;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.view.View;
@@ -25,9 +29,22 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.inject.Inject;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
+import com.sobag.parsetemplate.util.BitmapUtility;
 import com.sobag.parsetemplate.util.FontUtility;
+import com.sobag.parsetemplate.util.GeoUtility;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -55,19 +72,27 @@ public class LocationActivity extends CommonActivity
     TextView tvStart;
     @InjectView(tag = "ll_slider")
     LinearLayout ll_slider;
-    @InjectView(tag = "iv_takenImage")
-    ImageView iv_takenImage;
+
+
     @InjectView(tag = "iv_reference")
     ImageView iv_reference;
-    @InjectView(tag = "rl_takenImageContainer")
-    RelativeLayout rl_takenImageContainer;
+    @InjectView(tag = "rl_reference_container")
+    RelativeLayout rl_reference_container;
 
     private GoogleMap map = null;
     private LocationManager locationManager = null;
     private Marker marker = null;
+    // geo statics...
+    public static final int GPS_UPDATE_INTERVAL = 10000;
+    public static final int SATTELITE_UPDATE_INTERVAL = 10000;
+    public static final double DISTANCE_FILER = 80;
+
+    private List<LatLng> wayPoints = new ArrayList<LatLng>();
+    private Polyline polyLine;
 
     // statics
     public static int CAPTURE_IMAGE_RESULT = 49; // why 47? just like this number...
+    private String mCurrentPhotoPath;
 
     // ------------------------------------------------------------------------
     // default stuff...
@@ -96,15 +121,54 @@ public class LocationActivity extends CommonActivity
     {
         if (requestCode == CAPTURE_IMAGE_RESULT && resultCode == RESULT_OK)
         {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            File image = null;
+            try
+            {
+                image = new File(new URI(mCurrentPhotoPath));
+            }
+            catch (URISyntaxException ex)
+            {
+                ex.printStackTrace();
+            }
 
-            rl_takenImageContainer.setVisibility(View.VISIBLE);
-            iv_takenImage.setImageBitmap(photo);
+            if(image.exists())
+            {
+                Bitmap myBitmap = null;
+                int boxWidth = iv_reference.getWidth();
+                int boxHeight = iv_reference.getHeight();
 
-            // apply width & height
-            iv_takenImage.getLayoutParams().width = iv_reference.getWidth();
-            iv_takenImage.getLayoutParams().height = iv_reference.getHeight();
+                // decode bitmap using our super helper....
+                try
+                {
+                     myBitmap = new BitmapUtility(getApplicationContext()).getDownsampledBitmap(Uri.parse(mCurrentPhotoPath),
+                            boxWidth, boxHeight);
+                }
+                catch (IOException ex)
+                {
+                    Ln.e(ex);
+                }
 
+                RelativeLayout rlNew = new RelativeLayout(this);
+                rlNew.setLayoutParams(rl_reference_container.getLayoutParams());
+
+                ImageView ivNew = new ImageView(this);
+                ivNew.setLayoutParams(iv_reference.getLayoutParams());
+
+                ivNew.setImageBitmap(myBitmap);
+                ivNew.getLayoutParams().width = iv_reference.getWidth();
+                ivNew.getLayoutParams().height = iv_reference.getHeight();
+                ivNew.setScaleType(ImageView.ScaleType.FIT_XY);
+
+                RelativeLayout.LayoutParams reference_params = (RelativeLayout.LayoutParams) iv_reference.getLayoutParams();
+                reference_params.setMargins(10, 10, 10, 10);
+                iv_reference.setLayoutParams(reference_params);
+
+                rlNew.addView(ivNew);
+                ll_slider.addView(rlNew, 0);
+
+                iv_reference = ivNew;
+                rl_reference_container = rlNew;
+            }
         }
     }
 
@@ -114,8 +178,37 @@ public class LocationActivity extends CommonActivity
 
     public void onTakeImage(View view)
     {
-        Intent cameraInent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraInent, CAPTURE_IMAGE_RESULT);
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null)
+        {
+            // Create the File where the photo should go
+            File image = null;
+            try
+            {
+                image = createImageFile();
+            }
+            catch (IOException ex)
+            {
+                // Error occurred while creating the File
+                Ln.e(ex);
+            }
+            // Continue only if the File was successfully created
+            if (image != null)
+            {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        Uri.fromFile(image));
+                startActivityForResult(takePictureIntent, CAPTURE_IMAGE_RESULT);
+            }
+        }
+    }
+
+    public void onStartRiding(View view)
+    {
+        Intent ridingActivityIntent = new Intent(this,RidingActivity.class);
+        startActivity(ridingActivityIntent);
+
+        finish();
     }
 
     // ------------------------------------------------------------------------
@@ -152,11 +245,30 @@ public class LocationActivity extends CommonActivity
         Criteria criteria = new Criteria();
         String provider = locationManager.getBestProvider(criteria, false);
 
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,5000,0,this);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,10000,0,this);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,SATTELITE_UPDATE_INTERVAL,0,this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,GPS_UPDATE_INTERVAL,0,this);
 
         // show progressbar...
         progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private File createImageFile() throws IOException
+    {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "PNG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File img = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".png",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = "file:" + img.getAbsolutePath();
+
+        return img;
     }
 
     // ------------------------------------------------------------------------
@@ -166,32 +278,17 @@ public class LocationActivity extends CommonActivity
     @Override
     public void onLocationChanged(Location location)
     {
-        if (location.getProvider() == LocationManager.GPS_PROVIDER)
-        {
-            // remove updates in order to add GPS only updates as GPS is available
-            // now...
-            locationManager.removeUpdates(this);
-
-            // add gps updates
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,5000,0,this);
-        }
-
         // hide progressbar....
         progressBar.setVisibility(View.GONE);
 
         LatLng position = new LatLng(location.getLatitude(),location.getLongitude());
 
-        if (marker == null)
-        {
-            marker = map.addMarker(new MarkerOptions().position(position).title("YOU"));
-        }
-        else
-        {
-            marker.setPosition(position);
-        }
+        marker = map.addMarker(new MarkerOptions().position(position).title("YOU"));
 
         // move camera...
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+
+        locationManager.removeUpdates(this);
     }
 
     @Override
@@ -203,34 +300,12 @@ public class LocationActivity extends CommonActivity
     @Override
     public void onProviderEnabled(String provider)
     {
-        if (provider == LocationManager.GPS_PROVIDER)
-        {
-            // remove updates in order to add GPS only updates as GPS is available
-            // now...
-            locationManager.removeUpdates(this);
 
-            // add gps updates
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,5000,0,this);
-        }
     }
 
     @Override
     public void onProviderDisabled(String provider)
     {
-        if (provider == LocationManager.GPS_PROVIDER)
-        {
-            // remove updates in order to add GPS only updates as GPS is available
-            // now...
-            locationManager.removeUpdates(this);
 
-            // add gps updates
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,5000,0,this);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,10000,0,this);
-        }
     }
-
-    // ------------------------------------------------------------------------
-    // private usage
-    // ------------------------------------------------------------------------
-
 }

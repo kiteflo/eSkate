@@ -3,6 +3,9 @@ package com.sobag.parsetemplate.domain;
 import com.parse.ParseClassName;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by tzhmufl2 on 03.07.14.
  */
