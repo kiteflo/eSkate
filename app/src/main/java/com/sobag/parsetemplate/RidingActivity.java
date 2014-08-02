@@ -35,6 +35,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.inject.Inject;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
+import com.parse.SaveCallback;
+import com.sobag.parsetemplate.domain.Ride;
+import com.sobag.parsetemplate.domain.RideHolder;
+import com.sobag.parsetemplate.domain.Waypoint;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
 import com.sobag.parsetemplate.services.ParseInitializationService;
 import com.sobag.parsetemplate.services.ParseRequestService;
@@ -43,6 +50,11 @@ import com.sobag.parsetemplate.util.BitmapUtility;
 import com.sobag.parsetemplate.util.FontUtility;
 import com.sobag.parsetemplate.util.GeoUtility;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -110,32 +122,24 @@ public class RidingActivity extends CommonActivity
     @InjectView(tag = "et_rideTitle")
     EditText etRideTitle;
 
-    // TODO: remove
-    @InjectView(tag = "mapImage")
-    ImageView mapImage;
-
     private GoogleMap map = null;
     private LocationManager locationManager = null;
     private Marker marker = null;
+
     // geo statics...
     public static final int GPS_UPDATE_INTERVAL = 0;
     public static final int SATTELITE_UPDATE_INTERVAL = 0;
-    public static double DISTANCE_FILTER = 50;
-
-    private List<LatLng> wayPoints = new ArrayList<LatLng>();
-    private Polyline polyLine;
+    public static double DISTANCE_FILTER = 20;
+    public static double ACCURACY_MINIMUM = 0.5;
     private Location previousLocation = null;
 
-    // ride tracking...
-    private float distanceInMeters = 0;
-    private float currentSpeed = 0;
-    private float maxSpeed = 0;
-    private float avgSpeed = 0;
-    private List<Float> speedMeasurePoints = new ArrayList<Float>();
+    // ride
+    private RideHolder rideHolder = new RideHolder();
 
-    private String imagePath = null;
-    private String mapSnapshotPath = null;
-    public static int CAPTURE_IMAGE_RESULT = 50; // why 49? just like this number...
+    // ride tracking...
+    private float currentSpeed = 0;
+
+    public static int CAPTURE_IMAGE_RESULT = 51; // why 49? just like this number...
 
     // flag to decide whether finish or save should be triggered...
     private boolean save = false;
@@ -180,7 +184,7 @@ public class RidingActivity extends CommonActivity
             File image = null;
             try
             {
-                image = new File(new URI(imagePath));
+                image = new File(new URI(rideHolder.getRideImages().get(rideHolder.getRideImages().size()-1)));
             }
             catch (URISyntaxException ex)
             {
@@ -196,7 +200,9 @@ public class RidingActivity extends CommonActivity
                 // decode bitmap using our super helper....
                 try
                 {
-                    myBitmap = new BitmapUtility(getApplicationContext()).getDownsampledBitmap(Uri.parse(imagePath),
+                    myBitmap = new BitmapUtility(getApplicationContext()).getDownsampledBitmap(Uri.parse(
+                                    rideHolder.getRideImages().get(rideHolder.getRideImages().size()-1)
+                            ),
                             boxWidth, boxHeight);
 
                     // squared image? id so we crop down...
@@ -282,6 +288,10 @@ public class RidingActivity extends CommonActivity
             // stop GPS updates...
             locationManager.removeUpdates(this);
 
+            // set end point
+            rideHolder.setEndPosition(new LatLng(previousLocation.getLatitude(),
+                    previousLocation.getLongitude()));
+
             // display publish footer...
             int height = llContainer.getHeight();
             llShareContainer.setVisibility(View.VISIBLE);
@@ -302,12 +312,12 @@ public class RidingActivity extends CommonActivity
             // focus edittext
             etRideTitle.requestFocus();
 
-            // TODO: snapshot should be created on Save...
             // create map snapshot...
             try
             {
                 captureMapScreen();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Ln.e(e);
             }
@@ -321,7 +331,14 @@ public class RidingActivity extends CommonActivity
         // save ride...
         else
         {
-            parseRequestService.saveRide(new SaveRideRequest());
+            // prepare ride...
+            final Ride ride = new Ride();
+
+            // apply title...
+            rideHolder.setTitle(etRideTitle.getText().toString());
+
+            // trigger parse save operation...
+            parseRequestService.saveRide(new SaveRideRequest(),rideHolder);
         }
     }
 
@@ -357,7 +374,8 @@ public class RidingActivity extends CommonActivity
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        imagePath = "file:" + img.getAbsolutePath();
+        rideHolder.getRideImages().add("file:" + img.getAbsolutePath());
+
         return img;
     }
 
@@ -388,20 +406,25 @@ public class RidingActivity extends CommonActivity
             // move camera...
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
 
-            wayPoints.add(position);
+            rideHolder.getWaypoints().add(position);
+
+            // set start position...
+            rideHolder.setStartPosition(position);
 
             previousLocation = location;
         }
 
-        else if (location.distanceTo(previousLocation) > DISTANCE_FILTER && accuracy > 0.5)
+        else if (location.distanceTo(previousLocation) > DISTANCE_FILTER && accuracy > ACCURACY_MINIMUM)
         {
-            polyLine = map.addPolyline(new PolylineOptions()
-                    .addAll(wayPoints)
-                    .width(5)
+            rideHolder.getWaypoints().add(position);
+
+            map.addPolyline(new PolylineOptions()
+                    .addAll(rideHolder.getWaypoints())
+                    .width(10)
                     .color(Color.RED));
 
             // move camera...
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 13));
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
 
             // apply ride settings
             updateRidingResults(location);
@@ -505,28 +528,28 @@ public class RidingActivity extends CommonActivity
     private void updateRidingResults(Location location)
     {
         currentSpeed = location.getSpeed()/1000;
-        speedMeasurePoints.add(currentSpeed);
+        rideHolder.getSpeedMeasurePoints().add(currentSpeed);
 
-        if (currentSpeed > maxSpeed)
+        if (currentSpeed > rideHolder.getMaxSpeed())
         {
-            maxSpeed = currentSpeed;
+            rideHolder.setMaxSpeed(currentSpeed);
         }
 
         // calculate avg speed...
         float total = 0;
-        for (float value : speedMeasurePoints)
+        for (float value : rideHolder.getSpeedMeasurePoints())
         {
             total = total + value;
         }
-        avgSpeed = total / speedMeasurePoints.size();
+        rideHolder.setAvgSpeed(total / rideHolder.getSpeedMeasurePoints().size());
 
         // calculate distance...
-        distanceInMeters = distanceInMeters + (location.distanceTo(previousLocation));
+        rideHolder.setDistance(rideHolder.getDistance() + (location.distanceTo(previousLocation)));
 
         // set UI values...
         tvMaxSpeed.setText(String.format("%.2f", 22.6767867));
-        tvAvgSpeed.setText(String.format("%.2f", avgSpeed));
-        tvDistance.setText(String.format("%.2f", distanceInMeters/1000));
+        tvAvgSpeed.setText(String.format("%.2f", rideHolder.getAvgSpeed()));
+        tvDistance.setText(String.format("%.2f", rideHolder.getDistance()/1000));
     }
 
     // ------------------------------------------------------------------------
@@ -561,11 +584,7 @@ public class RidingActivity extends CommonActivity
                     FileOutputStream out = new FileOutputStream(snapshotFile);
                     bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
 
-                    mapSnapshotPath = "file:" + snapshotFile.getAbsolutePath();
-
-                    // TODO: remove
-                    Bitmap reRead = BitmapFactory.decodeFile(snapshotFile.getAbsolutePath());
-                    mapImage.setImageBitmap(reRead);
+                    rideHolder.setMapImage(snapshotFile.getAbsolutePath());
                 }
                 catch (Exception e)
                 {
@@ -602,7 +621,7 @@ public class RidingActivity extends CommonActivity
         {
             progressBar.setVisibility(View.GONE);
 
-            Toast.makeText(getApplicationContext(),"Saved ride...",Toast.LENGTH_LONG);
+            Toast.makeText(getApplicationContext(),"Saved ride...",Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -610,7 +629,7 @@ public class RidingActivity extends CommonActivity
         {
             progressBar.setVisibility(View.GONE);
 
-            Toast.makeText(getApplicationContext(),"Saved ride...",Toast.LENGTH_LONG);
+            Toast.makeText(getApplicationContext(),"Saved ride...",Toast.LENGTH_LONG).show();
         }
     }
 

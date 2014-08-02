@@ -1,6 +1,9 @@
 package com.sobag.parsetemplate.services;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -8,20 +11,31 @@ import com.google.inject.Inject;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.sobag.parsetemplate.crappyhelpers.Counter;
 import com.sobag.parsetemplate.domain.Board;
 import com.sobag.parsetemplate.domain.Ride;
+import com.sobag.parsetemplate.domain.RideHolder;
+import com.sobag.parsetemplate.domain.RideImage;
 import com.sobag.parsetemplate.domain.User;
 import com.sobag.parsetemplate.domain.Waypoint;
+import com.sobag.parsetemplate.util.BitmapUtility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.inject.Provider;
@@ -82,77 +96,155 @@ public class ParseRequestService
      * Save ride to parse...
      * @param requestListener
      */
-    public void saveRide(final RequestListener requestListener)
+    public void saveRide(final RequestListener requestListener,final RideHolder rideHolder)
     {
         requestListener.handleStartRequest();
 
         final Ride ride = new Ride();
-        ride.setTitle("My Test ride...");
+        ride.setTitle(rideHolder.getTitle());
 
-        // all waypoints...
-        JSONArray array = new JSONArray();
-        for (int i=0; i<100; i++)
-        {
-            try
-            {
-                JSONObject obj = new JSONObject();
-                obj.put("counter", i);
-                obj.put("latitude",10+1);
-                obj.put("longitude",174+1);
-                array.put(obj);
-            }
-            catch (JSONException ex)
-            {
-                Ln.e(ex);
-            }
-        }
-        ride.setWaypoints(array);
-
-        // start & end point
-        try
-        {
-            // add geo point...
-            Waypoint wp1 = new Waypoint();
-            wp1.setWaypoint(new ParseGeoPoint(10, 20));
-            wp1.save();
-            Waypoint wp2 = new Waypoint();
-            wp2.setWaypoint(new ParseGeoPoint(44, 43));
-            wp2.save();
-
-            ride.setStartPoint(wp1);
-            ride.setEndPoint(wp2);
-        }
-        catch (Exception ex)
-        {
-            Ln.e(ex);
-        }
-
-        ride.saveInBackground(new SaveCallback()
+        // apply map image...
+        Bitmap mapImg = BitmapFactory.decodeFile(rideHolder.getMapImage());
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        mapImg.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] data = stream.toByteArray();
+        final ParseFile parseMapImage = new ParseFile("myfile.png",data);
+        parseMapImage.saveInBackground(new SaveCallback()
         {
             @Override
             public void done(ParseException e)
             {
                 if (e == null)
                 {
-                    User user = (User)ParseUser.getCurrentUser();
-                    ride.setUser(user);
-                    ride.saveInBackground(new SaveCallback()
+                    ride.setMapImage(parseMapImage);
+
+                    // apply waypoints...
+                    JSONArray array = new JSONArray();
+                    int counter = 0;
+                    for (LatLng latLng : rideHolder.getWaypoints())
+                    {
+                        try
+                        {
+                            JSONObject obj = new JSONObject();
+                            obj.put("counter", counter++);
+                            obj.put("latitude",latLng.latitude);
+                            obj.put("longitude",latLng.longitude);
+                            array.put(obj);
+                        }
+                        catch (JSONException ex)
+                        {
+                            Ln.e(ex);
+                        }
+                    }
+                    ride.setWaypoints(array);
+
+                    // apply start & endpoint
+                    Waypoint start = new Waypoint();
+                    start.setWaypoint(new ParseGeoPoint(rideHolder.getStartPosition().latitude,
+                            rideHolder.getStartPosition().longitude));
+                    start.saveInBackground(new SaveCallback()
                     {
                         @Override
                         public void done(ParseException e)
                         {
                             if (e == null)
                             {
-                                Ln.i("Saved ride successfully...");
-                                requestListener.handleParseRequestSuccess();
-                            }
-                            else
+                                Waypoint end = new Waypoint();
+                                end.setWaypoint(new ParseGeoPoint(rideHolder.getEndPosition().latitude,
+                                        rideHolder.getEndPosition().longitude));
+                                end.saveInBackground(new SaveCallback()
+                                {
+                                    @Override
+                                    public void done(ParseException e)
+                                    {
+                                        if (e == null)
+                                        {
+                                            // upload ride images...
+                                            try
+                                            {
+                                                final Counter counter = new Counter();
+                                                for (String imagePath : rideHolder.getRideImages())
+                                                {
+                                                    File file = new File(new URI(imagePath));
+                                                    Bitmap bitmap = new BitmapUtility().getDownsampledBitmap(file, 6);
+                                                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                                    byte[] data = stream.toByteArray();
+                                                    ParseFile imageFile = new ParseFile("GIMME_A_NAME.png", data);
+                                                    final RideImage rideImage = new RideImage();
+                                                    rideImage.setRideImage(imageFile);
+                                                    rideImage.saveInBackground(new SaveCallback()
+                                                    {
+                                                        @Override
+                                                        public void done(ParseException e)
+                                                        {
+                                                            ride.getRideImages().add(rideImage);
+                                                            counter.setCount(counter.getCount()+1);
+
+                                                            // proceed after last image has been 100%ly uploaded...
+                                                            if (counter.getCount() == rideHolder.getRideImages().size())
+                                                            {
+                                                                ride.saveInBackground(new SaveCallback()
+                                                                {
+                                                                    @Override
+                                                                    public void done(ParseException e)
+                                                                    {
+                                                                        if (e == null)
+                                                                        {
+                                                                            User user = (User) ParseUser.getCurrentUser();
+                                                                            ride.setUser(user);
+                                                                            ride.saveInBackground(new SaveCallback()
+                                                                            {
+                                                                                @Override
+                                                                                public void done(ParseException e)
+                                                                                {
+                                                                                    if (e == null)
+                                                                                    {
+                                                                                        Ln.i("Saved ride successfully...");
+                                                                                        requestListener.handleParseRequestSuccess();
+                                                                                    } else
+                                                                                    {
+                                                                                        Ln.e(e);
+                                                                                        requestListener.handleParseRequestError(e);
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                    }
+                                                                });
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                            catch (IOException ex)
+                                            {
+                                                requestListener.handleParseRequestError(ex);
+                                            }
+                                            catch (URISyntaxException ex)
+                                            {
+                                                requestListener.handleParseRequestError(ex);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Ln.e(e);
+                                            requestListener.handleParseRequestError(e);
+                                        }
+                                    }
+                                });
+                            } else
                             {
                                 Ln.e(e);
                                 requestListener.handleParseRequestError(e);
                             }
                         }
                     });
+                }
+                else
+                {
+                    Ln.e(e);
+                    requestListener.handleParseRequestError(e);
                 }
             }
         });

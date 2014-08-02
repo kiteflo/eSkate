@@ -305,12 +305,6 @@
                         android:layout_centerVertical="true"
                         />
                 </RelativeLayout>
-
-                <ImageView
-                    android:tag="mapImage"
-                    android:id="@+id/mapImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
         </LinearLayout>

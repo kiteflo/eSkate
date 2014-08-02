@@ -13,6 +13,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.sobag.parsetemplate.domain.Board;
 import com.sobag.parsetemplate.domain.Ride;
+import com.sobag.parsetemplate.domain.RideImage;
 import com.sobag.parsetemplate.domain.User;
 import com.sobag.parsetemplate.domain.Waypoint;
 import com.sobag.parsetemplate.util.PreferenceProps;
@@ -70,6 +71,7 @@ public class ParseInitializationService
         ParseObject.registerSubclass(Board.class);
         ParseObject.registerSubclass(Ride.class);
         ParseObject.registerSubclass(Waypoint.class);
+        ParseObject.registerSubclass(RideImage.class);
 
         // actually parse does not provide a way of checking whether initialization failed
         // or not :( - so parse will always be initialized successfully right here...

@@ -32,6 +32,7 @@ public class BitmapUtility
     // constructors
     // ------------------------------------------------------------------------
 
+    public BitmapUtility(){}
     public BitmapUtility(Context context)
     {
         this.context = context;
@@ -40,6 +41,33 @@ public class BitmapUtility
     // ------------------------------------------------------------------------
     // public usage
     // ------------------------------------------------------------------------
+
+    /**
+     * Scale down image => 4 will return image scaled down to 1/4 width of
+     * original etc.
+     * @param scale
+     * @return
+     * @throws IOException
+     */
+    public Bitmap getDownsampledBitmap(File file, int scale)
+            throws IOException
+    {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = scale;
+        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(),options);
+
+        if (bitmap != null)
+        {
+            ExifInterface exif = new ExifInterface(file.getAbsolutePath());
+            String exifOrientation = exif
+                    .getAttribute(ExifInterface.TAG_ORIENTATION);
+            float degree = getDegree(exifOrientation);
+            if (degree != 0)
+                bitmap = createRotatedBitmap(bitmap, degree);
+        }
+
+        return bitmap;
+    }
 
     public Bitmap getDownsampledBitmap(Uri uri, int targetWidth, int targetHeight)
             throws IOException

@@ -27,6 +27,8 @@ public class Ride extends ParseObject
     private Waypoint startPoint;
     private Waypoint endPoint;
     private JSONArray waypoints;
+    private ParseFile mapImage;
+    private ParseRelation<RideImage> rideImages;
 
     // ------------------------------------------------------------------------
     // constructors
@@ -85,5 +87,23 @@ public class Ride extends ParseObject
     public void setWaypoints(JSONArray waypoints)
     {
         put("waypoints",waypoints);
+    }
+
+    // images
+
+    // map image
+
+    public ParseFile getMapImage() {
+        return getParseFile("mapImage");
+    }
+
+    public void setMapImage(ParseFile image) {
+        put("mapImage",image);
+    }
+
+    // ride images
+    public ParseRelation<RideImage> getRideImages()
+    {
+        return getRelation("rideImages");
     }
 }
