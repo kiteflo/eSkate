@@ -1,55 +1,40 @@
 package com.sobag.parsetemplate.domain;
 
 import com.parse.ParseClassName;
-import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+import com.parse.ParseRelation;
 
 /**
  * Created by tzhmufl2 on 08.07.14.
  */
-@ParseClassName("Board")
-public class Board extends ParseObject
+@ParseClassName("Waypoint")
+public class Waypoint extends ParseObject
 {
     // ------------------------------------------------------------------------
     // members
     // ------------------------------------------------------------------------
 
-    private String title;
-    private String subTitle;
-    private ParseFile image;
+    private ParseGeoPoint waypoint;
 
     // ------------------------------------------------------------------------
     // constructors
     // ------------------------------------------------------------------------
 
     // required by Parse SDK
-    public Board(){}
+    public Waypoint(){}
 
     // ------------------------------------------------------------------------
     // GETTER & SETTER
     // ------------------------------------------------------------------------
 
-    public String getTitle() {
-        return getString("title");
+    public ParseGeoPoint getWaypoint()
+    {
+        return getParseGeoPoint("waypoint");
     }
 
-    public void setTitle(String title) {
-        put("title",title);
-    }
-
-    public String getSubTitle() {
-        return getString("subTitle");
-    }
-
-    public void setSubTitle(String subTitle) {
-        put("subTitle",subTitle);
-    }
-
-    public ParseFile getImage() {
-        return getParseFile("image");
-    }
-
-    public void setImage(ParseFile image) {
-        put("image",image);
+    public void setWaypoint(ParseGeoPoint waypoint)
+    {
+        put("waypoint",waypoint);
     }
 }

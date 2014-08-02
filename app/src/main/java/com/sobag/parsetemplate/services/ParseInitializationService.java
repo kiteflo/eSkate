@@ -12,7 +12,9 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.sobag.parsetemplate.domain.Board;
+import com.sobag.parsetemplate.domain.Ride;
 import com.sobag.parsetemplate.domain.User;
+import com.sobag.parsetemplate.domain.Waypoint;
 import com.sobag.parsetemplate.util.PreferenceProps;
 import com.sobag.parsetemplate.R;
 import com.sobag.parsetemplate.util.SharedPreferencesUtility;
@@ -66,13 +68,15 @@ public class ParseInitializationService
         // register subclasses...
         ParseObject.registerSubclass(User.class);
         ParseObject.registerSubclass(Board.class);
+        ParseObject.registerSubclass(Ride.class);
+        ParseObject.registerSubclass(Waypoint.class);
 
         // actually parse does not provide a way of checking whether initialization failed
         // or not :( - so parse will always be initialized successfully right here...
         Parse.initialize(contextProvider.get(), applicationID, clientID);
         Ln.v("Parse initialized successfully!");
 
-        // init parse facebook stuff...
+        // init parse facebook_256 stuff...
         String fbAppID = contextProvider.get().getString(R.string.fbAppID);
         ParseFacebookUtils.initialize(fbAppID);
 
