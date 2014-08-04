@@ -3,6 +3,7 @@ package com.sobag.parsetemplate.domain;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,6 +15,8 @@ public class RideHolder
     // members
     // ------------------------------------------------------------------------
 
+    private Date startTime;
+    private Date endTime;
     private String title;
     private LatLng startPosition;
     private LatLng endPosition;
@@ -26,8 +29,13 @@ public class RideHolder
     private String mapImage;
 
     // ------------------------------------------------------------------------
+    // constructors
+    // ------------------------------------------------------------------------
+
+    // ------------------------------------------------------------------------
     // GETTER & SETTER
     // ------------------------------------------------------------------------
+
 
     public LatLng getStartPosition()
     {
@@ -127,5 +135,25 @@ public class RideHolder
     public void setTitle(String title)
     {
         this.title = title;
+    }
+
+    public Date getStartTime()
+    {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime)
+    {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime()
+    {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime)
+    {
+        this.endTime = endTime;
     }
 }

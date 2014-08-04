@@ -162,28 +162,74 @@ public class ParseRequestService
                                             // upload ride images...
                                             try
                                             {
-                                                final Counter counter = new Counter();
-                                                for (String imagePath : rideHolder.getRideImages())
+                                                if (rideHolder.getRideImages().size() > 0)
                                                 {
-                                                    File file = new File(new URI(imagePath));
-                                                    Bitmap bitmap = new BitmapUtility().getDownsampledBitmap(file, 6);
-                                                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                                    byte[] data = stream.toByteArray();
-                                                    ParseFile imageFile = new ParseFile("GIMME_A_NAME.png", data);
-                                                    final RideImage rideImage = new RideImage();
-                                                    rideImage.setRideImage(imageFile);
-                                                    rideImage.saveInBackground(new SaveCallback()
+                                                    final Counter counter = new Counter();
+                                                    for (String imagePath : rideHolder.getRideImages())
+                                                    {
+                                                        File file = new File(new URI(imagePath));
+                                                        Bitmap bitmap = new BitmapUtility().getDownsampledBitmap(file, 6);
+                                                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                                        byte[] data = stream.toByteArray();
+                                                        ParseFile imageFile = new ParseFile("GIMME_A_NAME.png", data);
+                                                        final RideImage rideImage = new RideImage();
+                                                        rideImage.setRideImage(imageFile);
+                                                        rideImage.saveInBackground(new SaveCallback()
+                                                        {
+                                                            @Override
+                                                            public void done(ParseException e)
+                                                            {
+                                                                ride.getRideImages().add(rideImage);
+                                                                counter.setCount(counter.getCount() + 1);
+
+                                                                // proceed after last image has been 100%ly uploaded...
+                                                                if (counter.getCount() == rideHolder.getRideImages().size())
+                                                                {
+                                                                    ride.saveInBackground(new SaveCallback()
+                                                                    {
+                                                                        @Override
+                                                                        public void done(ParseException e)
+                                                                        {
+                                                                            if (e == null)
+                                                                            {
+                                                                                User user = (User) ParseUser.getCurrentUser();
+                                                                                ride.setUser(user);
+                                                                                ride.saveInBackground(new SaveCallback()
+                                                                                {
+                                                                                    @Override
+                                                                                    public void done(ParseException e)
+                                                                                    {
+                                                                                        if (e == null)
+                                                                                        {
+                                                                                            Ln.i("Saved ride successfully...");
+                                                                                            requestListener.handleParseRequestSuccess();
+                                                                                        } else
+                                                                                        {
+                                                                                            Ln.e(e);
+                                                                                            requestListener.handleParseRequestError(e);
+                                                                                        }
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    ride.saveInBackground(new SaveCallback()
                                                     {
                                                         @Override
                                                         public void done(ParseException e)
                                                         {
-                                                            ride.getRideImages().add(rideImage);
-                                                            counter.setCount(counter.getCount()+1);
-
-                                                            // proceed after last image has been 100%ly uploaded...
-                                                            if (counter.getCount() == rideHolder.getRideImages().size())
+                                                            if (e == null)
                                                             {
+                                                                User user = (User) ParseUser.getCurrentUser();
+                                                                ride.setUser(user);
                                                                 ride.saveInBackground(new SaveCallback()
                                                                 {
                                                                     @Override
@@ -191,24 +237,12 @@ public class ParseRequestService
                                                                     {
                                                                         if (e == null)
                                                                         {
-                                                                            User user = (User) ParseUser.getCurrentUser();
-                                                                            ride.setUser(user);
-                                                                            ride.saveInBackground(new SaveCallback()
-                                                                            {
-                                                                                @Override
-                                                                                public void done(ParseException e)
-                                                                                {
-                                                                                    if (e == null)
-                                                                                    {
-                                                                                        Ln.i("Saved ride successfully...");
-                                                                                        requestListener.handleParseRequestSuccess();
-                                                                                    } else
-                                                                                    {
-                                                                                        Ln.e(e);
-                                                                                        requestListener.handleParseRequestError(e);
-                                                                                    }
-                                                                                }
-                                                                            });
+                                                                            Ln.i("Saved ride successfully...");
+                                                                            requestListener.handleParseRequestSuccess();
+                                                                        } else
+                                                                        {
+                                                                            Ln.e(e);
+                                                                            requestListener.handleParseRequestError(e);
                                                                         }
                                                                     }
                                                                 });

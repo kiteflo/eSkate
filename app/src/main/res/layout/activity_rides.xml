@@ -19,13 +19,13 @@
         android:layout_alignParentBottom="true"
         >
         <ImageView
-            android:layout_centerInParent="true"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
+            android:layout_toLeftOf="@id/tv_new_ride_label"
+            android:layout_width="40dp"
             android:layout_height="40dp"
             android:clickable="false"
             android:background="#00000000"
             android:padding="5dp"
+            android:src="@drawable/image_button_plus"
             />
         <TextView
             android:tag="tv_new_ride_label"

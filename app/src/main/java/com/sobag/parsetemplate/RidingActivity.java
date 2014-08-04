@@ -15,7 +15,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -92,6 +95,12 @@ public class RidingActivity extends CommonActivity
     TextView tvLocation;
     @InjectView(tag = "tv_finish")
     TextView tvFinish;
+    @InjectView(tag = "tv_pause")
+    TextView tvPause;
+    @InjectView(tag = "but_pause")
+    RelativeLayout butPause;
+    @InjectView(tag = "view_divider_footer")
+    View viewDividerFooter;
 
     @InjectView(tag = "tv_distance")
     TextView tvDistance;
@@ -122,6 +131,14 @@ public class RidingActivity extends CommonActivity
     @InjectView(tag = "et_rideTitle")
     EditText etRideTitle;
 
+    @InjectView(tag = "custom_button_protected")
+    RelativeLayout custom_button_protected;
+    @InjectView(tag = "custom_button")
+    RelativeLayout custom_button;
+    @InjectView(tag = "view_lock_protected")
+    View viewLockProtected;
+
+
     private GoogleMap map = null;
     private LocationManager locationManager = null;
     private Marker marker = null;
@@ -135,6 +152,7 @@ public class RidingActivity extends CommonActivity
 
     // ride
     private RideHolder rideHolder = new RideHolder();
+    private boolean paused = false;
 
     // ride tracking...
     private float currentSpeed = 0;
@@ -143,6 +161,9 @@ public class RidingActivity extends CommonActivity
 
     // flag to decide whether finish or save should be triggered...
     private boolean save = false;
+
+    // animation stuff
+    boolean animationFinished = false;
 
     // ------------------------------------------------------------------------
     // default stuff
@@ -156,8 +177,6 @@ public class RidingActivity extends CommonActivity
 
         // apply fonts
         fontUtility.applyFontToComponent(tvLocation,R.string.default_font,
-                FontApplicableComponent.TEXT_VIEW);
-        fontUtility.applyFontToComponent(tvFinish,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
         fontUtility.applyFontToComponent(tvFacebook,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
@@ -174,6 +193,51 @@ public class RidingActivity extends CommonActivity
         // init map & location manager...
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         initMapToCurrentPosition();
+
+        custom_button_protected.setOnTouchListener(new View.OnTouchListener()
+        {
+            Animation animFadein = null;
+            @Override
+            public boolean onTouch(View v, MotionEvent event)
+            {
+                if (event.getAction() == MotionEvent.ACTION_DOWN)
+                {
+                    animationFinished = true;
+
+                    viewLockProtected.setVisibility(View.VISIBLE);
+
+                    // load the animation
+                    animFadein = AnimationUtils.loadAnimation(getApplicationContext(),
+                            R.anim.button_lock_animation);
+                    animFadein.setAnimationListener(new ButtonAnimationListener());
+
+                    // start the animation
+                    viewLockProtected.startAnimation(animFadein);
+                }
+                if (event.getAction() == MotionEvent.ACTION_UP)
+                {
+                    if (animFadein.hasEnded())
+                    {
+                        custom_button_protected.setVisibility(View.GONE);
+                        custom_button.setVisibility(View.VISIBLE);
+                    }
+                    else
+                    {
+                        animationFinished = false;
+
+                        viewLockProtected.setVisibility(View.INVISIBLE);
+
+                        animFadein.cancel();
+                        viewLockProtected.clearAnimation();
+                    }
+                }
+
+                return true;
+            }
+        });
+
+        // init rideHolder
+        rideHolder.setStartTime(new Date());
     }
 
     @Override
@@ -292,6 +356,13 @@ public class RidingActivity extends CommonActivity
             rideHolder.setEndPosition(new LatLng(previousLocation.getLatitude(),
                     previousLocation.getLongitude()));
 
+            // set end time
+            rideHolder.setEndTime(new Date());
+
+            // update UI (hide oause button...
+            butPause.setVisibility(View.GONE);
+            viewDividerFooter.setVisibility(View.GONE);
+
             // display publish footer...
             int height = llContainer.getHeight();
             llShareContainer.setVisibility(View.VISIBLE);
@@ -339,6 +410,24 @@ public class RidingActivity extends CommonActivity
 
             // trigger parse save operation...
             parseRequestService.saveRide(new SaveRideRequest(),rideHolder);
+        }
+    }
+
+    public void onPause(View view)
+    {
+        if (!paused)
+        {
+            Toast.makeText(this, getString(R.string.msg_paused), Toast.LENGTH_LONG).show();
+            paused = true;
+            tvPause.setText(getString(R.string.but_resume));
+        }
+        else
+        {
+            paused = false;
+            tvPause.setText(getString(R.string.but_pause));
+            custom_button.setVisibility(View.INVISIBLE);
+            custom_button_protected.setVisibility(View.VISIBLE);
+            viewLockProtected.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -414,8 +503,9 @@ public class RidingActivity extends CommonActivity
             previousLocation = location;
         }
 
-        else if (location.distanceTo(previousLocation) > DISTANCE_FILTER && accuracy > ACCURACY_MINIMUM)
+        else if (location.distanceTo(previousLocation) > DISTANCE_FILTER && accuracy > ACCURACY_MINIMUM && !paused)
         {
+            // add waypoint to rideHolder
             rideHolder.getWaypoints().add(position);
 
             map.addPolyline(new PolylineOptions()
@@ -633,4 +723,30 @@ public class RidingActivity extends CommonActivity
         }
     }
 
+    public class ButtonAnimationListener
+            implements Animation.AnimationListener
+    {
+
+        @Override
+        public void onAnimationStart(Animation animation)
+        {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation)
+        {
+            if (animationFinished)
+            {
+                custom_button.setVisibility(View.VISIBLE);
+                custom_button_protected.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation)
+        {
+
+        }
+    }
 }
