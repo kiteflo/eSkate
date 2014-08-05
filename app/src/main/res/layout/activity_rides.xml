@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:onClick="onCreateRide"
         android:layout_alignParentBottom="true"
-        custom:buttonTitle="My Super Duper Button"
+        custom:buttonTitle="@string/but_new_ride"
         custom:buttonIcon="@drawable/lock_161"
         custom:showIcon="false"
         />

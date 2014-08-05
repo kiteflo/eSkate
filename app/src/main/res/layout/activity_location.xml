@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.sobag.parsetemplate.InitRideActivity"
@@ -159,36 +160,15 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/custom_button"
+    <com.sobag.module.customButton.CustomButton
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        style="@style/signup_button_with_icon"
-        android:clickable="true"
         android:onClick="onStartRiding"
         android:layout_alignParentBottom="true"
-        >
-        <ImageView
-            android:layout_centerInParent="true"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:clickable="false"
-            android:background="#00000000"
-            android:padding="5dp"
-            />
-        <TextView
-            android:tag="tv_start"
-            android:id="@+id/tv_start"
-            style="@style/signup_button_with_icon_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="false"
-            android:background="#00000000"
-            android:text="@string/but_start"
-            android:layout_centerInParent="true"
-            />
-    </RelativeLayout>
+        custom:buttonTitle="@string/but_start"
+        custom:buttonIcon="@drawable/lock_161"
+        custom:showIcon="false"
+        />
 
     <ProgressBar
         android:tag="progressBar"

@@ -44,8 +44,8 @@ public class InitRideActivity extends CommonActivity
 
     @InjectView(tag = "tv_board")
     TextView tvBoard;
-    @InjectView(tag = "tv_next")
-    TextView tvNext;
+    @InjectView(tag = "tv_label")
+    TextView tvLabel;
 
     private View currentlySelectedItem = null;
 
@@ -62,7 +62,7 @@ public class InitRideActivity extends CommonActivity
         // apply fonts
         fontUtility.applyFontToComponent(tvBoard,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
-        fontUtility.applyFontToComponent(tvNext,R.string.default_font,
+        fontUtility.applyFontToComponent(tvLabel,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
 
         // fetch boards...

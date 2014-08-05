@@ -1,6 +1,7 @@
 package com.sobag.module.customButton;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -20,7 +21,12 @@ public class CustomButton extends RelativeLayout
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.custom_button, this);
 
-        String title = attrs.getAttributeValue("http://schemas.android.com/apk/res-auto", "buttonTitle");
+        TypedArray a=getContext().obtainStyledAttributes(
+                attrs,
+                R.styleable.CustomButton);
+
+        String title = a.getString(
+                R.styleable.CustomButton_buttonTitle);
         applyTitle(title);
 
         Boolean showIcon = attrs.getAttributeBooleanValue("http://schemas.android.com/apk/res-auto", "showIcon", true);

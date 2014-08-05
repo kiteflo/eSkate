@@ -68,8 +68,8 @@ public class LocationActivity extends CommonActivity
 
     @InjectView(tag = "tv_location")
     TextView tvLocation;
-    @InjectView(tag = "tv_start")
-    TextView tvStart;
+    @InjectView(tag = "tv_label")
+    TextView tvLabel;
     @InjectView(tag = "ll_slider")
     LinearLayout ll_slider;
 
@@ -107,7 +107,7 @@ public class LocationActivity extends CommonActivity
         // apply fonts
         fontUtility.applyFontToComponent(tvLocation,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
-        fontUtility.applyFontToComponent(tvStart,R.string.default_font,
+        fontUtility.applyFontToComponent(tvLabel,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
 
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.frag_map))
