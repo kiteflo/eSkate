@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomButton">
+        <attr name="buttonTitle" format="string"/>
+        <attr name="buttonIcon" format="reference" />
+        <attr name="showIcon" format="boolean" />
+        <!--
+        not possible by now to pass drawables...
+        android issue..:
+        see...: https://code.google.com/p/android/issues/detail?id=26251
+
+        <attr name="buttonBackgroundColor" format="string" />
+        <attr name="buttonBackgroundColorHighlighted" format="string" />
+        -->
+    </declare-styleable>
+
+</resources>

@@ -17,9 +17,6 @@ public class RidesActivity extends CommonActivity
     // members
     // ------------------------------------------------------------------------
 
-    @InjectView(tag = "tv_new_ride_label")
-    TextView tvNewRideButtonLabel;
-
     @Inject
     FontUtility fontUtility;
 
@@ -32,9 +29,6 @@ public class RidesActivity extends CommonActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rides);
-
-        fontUtility.applyFontToComponent(tvNewRideButtonLabel,R.string.default_font,
-                FontApplicableComponent.TEXT_VIEW);
     }
 
     // ------------------------------------------------------------------------

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFF</color>
+    <color name="poisonGreen">#648f00</color>
+    <color name="poisonGreenHighlighted">#94d600</color>
+</resources>

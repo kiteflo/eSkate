@@ -1,43 +1,24 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.sobag.parsetemplate.RidesActivity"
-    android:background="@color/default_background">
+    android:background="@color/default_background"
+    >
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="3dp"
         android:background="@color/poisonGreen"/>
-
-    <RelativeLayout
+    <com.sobag.module.customButton.CustomButton
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        style="@style/signup_button_with_icon"
-        android:clickable="true"
         android:onClick="onCreateRide"
         android:layout_alignParentBottom="true"
-        >
-        <ImageView
-            android:layout_toLeftOf="@id/tv_new_ride_label"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:clickable="false"
-            android:background="#00000000"
-            android:padding="5dp"
-            android:src="@drawable/image_button_plus"
-            />
-        <TextView
-            android:tag="tv_new_ride_label"
-            android:id="@+id/tv_new_ride_label"
-            style="@style/signup_button_with_icon_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="false"
-            android:background="#00000000"
-            android:text="@string/but_new_ride"
-            android:layout_centerInParent="true"
-            />
-    </RelativeLayout>
+        custom:buttonTitle="My Super Duper Button"
+        custom:buttonIcon="@drawable/lock_161"
+        custom:showIcon="false"
+        />
 
 </RelativeLayout>

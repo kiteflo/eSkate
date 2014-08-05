@@ -1,0 +1,5 @@
+<resources>
+    <style name="button_with_icon">
+        <item name="android:background">@drawable/but_selector</item>
+    </style>
+</resources>
