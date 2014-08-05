@@ -20,6 +20,9 @@ public class RidesActivity extends CommonActivity
     @Inject
     FontUtility fontUtility;
 
+    @InjectView(tag = "tv_label")
+    TextView tvLabel;
+
     // ------------------------------------------------------------------------
     // default stuff
     // ------------------------------------------------------------------------
@@ -39,5 +42,8 @@ public class RidesActivity extends CommonActivity
     {
         Intent initRideActivity = new Intent(this,InitRideActivity.class);
         startActivity(initRideActivity);
+
+        fontUtility.applyFontToComponent(tvLabel,R.string.default_font,
+                FontApplicableComponent.TEXT_VIEW);
     }
 }
