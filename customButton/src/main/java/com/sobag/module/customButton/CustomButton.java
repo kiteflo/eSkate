@@ -25,11 +25,15 @@ public class CustomButton extends RelativeLayout
 
         Boolean showIcon = attrs.getAttributeBooleanValue("http://schemas.android.com/apk/res-auto", "showIcon", true);
 
-        Drawable icon = getResources().getDrawable(attrs.getAttributeResourceValue("http://schemas.android.com/apk/res-auto", "buttonIcon", R.drawable.world));
-        applyIcon(icon);
-
-        // ...
-        String test;
+        if (showIcon)
+        {
+            Drawable icon = getResources().getDrawable(attrs.getAttributeResourceValue("http://schemas.android.com/apk/res-auto", "buttonIcon", R.drawable.world));
+            applyIcon(icon);
+        }
+        else
+        {
+            applyIcon(null);
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -44,7 +48,15 @@ public class CustomButton extends RelativeLayout
 
     private void applyIcon(Drawable icon)
     {
-        ImageView ivIcon = (ImageView)findViewById(R.id.iv_icon);
-        ivIcon.setImageDrawable(icon);
+        ImageView ivIcon = (ImageView) findViewById(R.id.iv_icon);
+
+        if (icon != null)
+        {
+            ivIcon.setImageDrawable(icon);
+        }
+        else
+        {
+            ivIcon.setVisibility(GONE);
+        }
     }
 }
