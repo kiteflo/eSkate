@@ -1,5 +1,7 @@
 package com.sobag.parsetemplate.domain;
 
+import android.graphics.Bitmap;
+
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
@@ -17,6 +19,10 @@ public class RideImage extends ParseObject
 
     private ParseFile rideImage;
     private ParseGeoPoint geo;
+
+    // non parse members...
+    private Bitmap thumbnail;
+    private byte[] rawData;
 
     // ------------------------------------------------------------------------
     // constructors
@@ -45,5 +51,30 @@ public class RideImage extends ParseObject
 
     public void setRideImage(ParseFile rideImage) {
         put("rideImage",rideImage);
+    }
+
+    public void resetRideImage()
+    {
+        rideImage = null;
+    }
+
+    public Bitmap getThumbnail()
+    {
+        return thumbnail;
+    }
+
+    public void setThumbnail(Bitmap thumbnail)
+    {
+        this.thumbnail = thumbnail;
+    }
+
+    public byte[] getRawData()
+    {
+        return rawData;
+    }
+
+    public void setRawData(byte[] rawData)
+    {
+        this.rawData = rawData;
     }
 }

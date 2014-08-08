@@ -76,7 +76,10 @@
             android:label="@string/title_activity_riding"
             android:screenOrientation="portrait" >
         </activity>
-
+        <activity
+            android:name=".RideSummaryActivity"
+            android:label="@string/title_activity_ride_summary" >
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

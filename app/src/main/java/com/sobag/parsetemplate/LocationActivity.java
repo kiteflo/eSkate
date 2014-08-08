@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.inject.Inject;
+import com.sobag.parsetemplate.domain.RideHolder;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
 import com.sobag.parsetemplate.util.BitmapUtility;
 import com.sobag.parsetemplate.util.FontUtility;
@@ -58,6 +59,9 @@ public class LocationActivity extends CommonActivity
     // ------------------------------------------------------------------------
     // members
     // ------------------------------------------------------------------------
+
+    @Inject
+    RideHolder rideHolder;
 
     @Nullable
     @InjectView(tag = "progressBar")
@@ -267,6 +271,9 @@ public class LocationActivity extends CommonActivity
 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = "file:" + img.getAbsolutePath();
+
+        // Save a file: path for use with ACTION_VIEW intents
+        rideHolder.getRideImages().add("file:" + img.getAbsolutePath());
 
         return img;
     }

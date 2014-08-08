@@ -52,6 +52,7 @@ import com.sobag.parsetemplate.services.RequestListener;
 import com.sobag.parsetemplate.util.BitmapUtility;
 import com.sobag.parsetemplate.util.FontUtility;
 import com.sobag.parsetemplate.util.GeoUtility;
+import com.sobag.parsetemplate.util.TimerUtility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -106,6 +107,8 @@ public class RidingActivity extends CommonActivity
     TextView tvDistance;
     @InjectView(tag = "tv_avgSpeed")
     TextView tvAvgSpeed;
+    @InjectView(tag = "tv_timer")
+    TextView tvTimer;
 
     @InjectView(tag = "tv_maxSpeed")
     TextView tvMaxSpeed;
@@ -135,6 +138,8 @@ public class RidingActivity extends CommonActivity
     RelativeLayout custom_button_protected;
     @InjectView(tag = "custom_button")
     RelativeLayout custom_button;
+    @InjectView(tag = "start_button")
+    RelativeLayout start_button;
     @InjectView(tag = "view_lock_protected")
     View viewLockProtected;
 
@@ -146,16 +151,26 @@ public class RidingActivity extends CommonActivity
     // geo statics...
     public static final int GPS_UPDATE_INTERVAL = 0;
     public static final int SATTELITE_UPDATE_INTERVAL = 0;
-    public static double DISTANCE_FILTER = 20;
-    public static double ACCURACY_MINIMUM = 0.5;
+    public static double DISTANCE_FILTER_GPS = 8;
+    public static double DISTANCE_FILTER_NETWORK = 15;
+    public static double DISTANCE_MAX_FILTER_NETWORK = 60;
+    private double currentDistanceFilter;
+    public static double ACCURACY_MINIMUM_GPS = 5;
+    public static double ACCURACY_MINIMUM_NETWORK = 30;
+    private double currentAccuracyFilter;
     private Location previousLocation = null;
 
     // ride
-    private RideHolder rideHolder = new RideHolder();
-    private boolean paused = false;
+    @Inject
+    private RideHolder rideHolder;
+
+    // timer
+    private TimerUtility timerUtility;
+
+    private boolean paused = true;
 
     // ride tracking...
-    private float currentSpeed = 0;
+    private double currentSpeed = 0;
 
     public static int CAPTURE_IMAGE_RESULT = 51; // why 49? just like this number...
 
@@ -235,9 +250,6 @@ public class RidingActivity extends CommonActivity
                 return true;
             }
         });
-
-        // init rideHolder
-        rideHolder.setStartTime(new Date());
     }
 
     @Override
@@ -307,7 +319,6 @@ public class RidingActivity extends CommonActivity
                         .icon(BitmapDescriptorFactory.fromBitmap(bmp))
                                 // Specifies the anchor to be at a particular point in the marker image.
                         .anchor(0.5f, 1));
-
             }
         }
     }
@@ -315,6 +326,27 @@ public class RidingActivity extends CommonActivity
     // ------------------------------------------------------------------------
     // public usage
     // ------------------------------------------------------------------------
+
+    public void onStart(View view)
+    {
+        // init rideHolder
+        rideHolder.setStartTime(new Date());
+
+        // enable tracking
+        paused = false;
+
+        if (previousLocation != null)
+        {
+            rideHolder.setStartPosition(new LatLng(previousLocation.getLatitude(), previousLocation.getLongitude()));
+        }
+
+        // start timer
+        timerUtility = new TimerUtility();
+        timerUtility.startTimer(tvTimer);
+
+        start_button.setVisibility(View.GONE);
+        custom_button_protected.setVisibility(View.VISIBLE);
+    }
 
     public void onTakePhoto(View view)
     {
@@ -352,12 +384,16 @@ public class RidingActivity extends CommonActivity
             // stop GPS updates...
             locationManager.removeUpdates(this);
 
+            // stop timer
+            timerUtility.stopTimer();
+
             // set end point
             rideHolder.setEndPosition(new LatLng(previousLocation.getLatitude(),
                     previousLocation.getLongitude()));
 
             // set end time
             rideHolder.setEndTime(new Date());
+            rideHolder.setDuration(tvTimer.getText().toString());
 
             // update UI (hide oause button...
             butPause.setVisibility(View.GONE);
@@ -420,6 +456,7 @@ public class RidingActivity extends CommonActivity
             Toast.makeText(this, getString(R.string.msg_paused), Toast.LENGTH_LONG).show();
             paused = true;
             tvPause.setText(getString(R.string.but_resume));
+            timerUtility.pauseTimer();
         }
         else
         {
@@ -428,6 +465,7 @@ public class RidingActivity extends CommonActivity
             custom_button.setVisibility(View.INVISIBLE);
             custom_button_protected.setVisibility(View.VISIBLE);
             viewLockProtected.setVisibility(View.INVISIBLE);
+            timerUtility.startTimer(tvTimer);
         }
     }
 
@@ -437,10 +475,12 @@ public class RidingActivity extends CommonActivity
 
     private void initMapToCurrentPosition()
     {
+        // apply NETWORK settings...
+        applyNetworkCarrierSettings();
+
         // Define the criteria how to select the locatioin provider -> use
         // default
         Criteria criteria = new Criteria();
-        String provider = locationManager.getBestProvider(criteria, false);
 
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,SATTELITE_UPDATE_INTERVAL,0,this);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,GPS_UPDATE_INTERVAL,0,this);
@@ -475,51 +515,97 @@ public class RidingActivity extends CommonActivity
     @Override
     public void onLocationChanged(Location location)
     {
-        float accuracy = location.getAccuracy();
-
-        if (location.getProvider() == LocationManager.GPS_PROVIDER)
-        {
-            applyGPSBasedSettings();
-        }
-
         // hide progressbar....
         progressBar.setVisibility(View.GONE);
 
+        float accuracy = location.getAccuracy();
         LatLng position = new LatLng(location.getLatitude(),location.getLongitude());
 
-        // first point?
-        if (marker == null)
+        if (previousLocation != null)
         {
-            marker = map.addMarker(new MarkerOptions().position(position).title("YOU"));
+            Ln.i("Provider: " + location.getProvider() + " | accuracy: " + accuracy + " | distance to previous: " + location.distanceTo(previousLocation));
 
-            // move camera...
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+            if (previousLocation.getProvider().equals(LocationManager.NETWORK_PROVIDER) &&
+                    location.getProvider().equals(LocationManager.GPS_PROVIDER))
+            {
+                applyGPSBasedSettings();
+                previousLocation = location;
 
-            rideHolder.getWaypoints().add(position);
+                // ride did not start, update marker...
+                if (rideHolder.getStartTime() == null)
+                {
+                    applyMarkerAsStartPoint(position);
+                }
+            }
+            else if (previousLocation.getProvider().equals(LocationManager.GPS_PROVIDER) &&
+                    location.getProvider().equals(LocationManager.NETWORK_PROVIDER))
+            {
+                applyNetworkCarrierSettings();
 
-            // set start position...
-            rideHolder.setStartPosition(position);
+                if (location.distanceTo(previousLocation) > currentDistanceFilter && accuracy > currentAccuracyFilter
+                        && location.distanceTo(previousLocation) < DISTANCE_MAX_FILTER_NETWORK)
+                {
+                    previousLocation = location;
+                }
+            }
+        }
+
+        // virgin point
+        else
+        {
+            applyMarkerAsStartPoint(position);
 
             previousLocation = location;
         }
 
-        else if (location.distanceTo(previousLocation) > DISTANCE_FILTER && accuracy > ACCURACY_MINIMUM && !paused)
+
+        if (location.distanceTo(previousLocation) > currentDistanceFilter && accuracy > currentAccuracyFilter
+                && !paused && rideHolder.getStartTime() != null)
         {
-            // add waypoint to rideHolder
-            rideHolder.getWaypoints().add(position);
+            // check for max distance...
+            if (previousLocation.getProvider().length() != location.getProvider().length())
+            {
+                if (location.distanceTo(previousLocation) < DISTANCE_MAX_FILTER_NETWORK)
+                {
+                    Ln.i("Adding waypoint to route...");
 
-            map.addPolyline(new PolylineOptions()
-                    .addAll(rideHolder.getWaypoints())
-                    .width(10)
-                    .color(Color.RED));
+                    // add waypoint to rideHolder
+                    rideHolder.getWaypoints().add(position);
 
-            // move camera...
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+                    map.addPolyline(new PolylineOptions()
+                            .addAll(rideHolder.getWaypoints())
+                            .width(10)
+                            .color(Color.RED));
 
-            // apply ride settings
-            updateRidingResults(location);
+                    // move camera...
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
 
-            previousLocation = location;
+                    // apply ride settings
+                    updateRidingResults(location);
+
+                    previousLocation = location;
+                }
+            }
+            else
+            {
+                Ln.i("Adding waypoint to route...");
+
+                // add waypoint to rideHolder
+                rideHolder.getWaypoints().add(position);
+
+                map.addPolyline(new PolylineOptions()
+                        .addAll(rideHolder.getWaypoints())
+                        .width(10)
+                        .color(Color.RED));
+
+                // move camera...
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+
+                // apply ride settings
+                updateRidingResults(location);
+
+                previousLocation = location;
+            }
         }
     }
 
@@ -532,7 +618,9 @@ public class RidingActivity extends CommonActivity
     @Override
     public void onProviderEnabled(String provider)
     {
-        if (provider == LocationManager.GPS_PROVIDER)
+        Ln.i("Enabled provider: " +provider + " - switching to GPS");
+
+        if (provider.equals(LocationManager.GPS_PROVIDER))
         {
             applyGPSBasedSettings();
         }
@@ -541,12 +629,14 @@ public class RidingActivity extends CommonActivity
     @Override
     public void onProviderDisabled(String provider)
     {
-        if (provider == LocationManager.GPS_PROVIDER)
+        if (provider.equals(LocationManager.GPS_PROVIDER))
         {
+            Ln.i("Disabled provider: " +provider + " - switching to Network");
             applyNetworkCarrierSettings();
         }
-        else if (provider == LocationManager.NETWORK_PROVIDER)
+        else if (provider.equals(LocationManager.NETWORK_PROVIDER))
         {
+            Ln.i("Disabled provider: " +provider + " - switching to GPS");
             applyGPSBasedSettings();
         }
     }
@@ -555,41 +645,10 @@ public class RidingActivity extends CommonActivity
     // private usage
     // ------------------------------------------------------------------------
 
-    /**
-     * Check whether way points need to be added...in case way point is more than
-     * 50 meters away from previous way point we add.
-     * @param point
-     * @param wayPoints
-     * @return
-     */
-    private boolean checkWhetherWayPointNeedsToBeAdded(LatLng point,List<LatLng> wayPoints)
-    {
-        LatLng lastPoint = null;
-
-        try
-        {
-            lastPoint = wayPoints.get(wayPoints.size() - 1);
-        }
-        catch (ArrayIndexOutOfBoundsException ex)
-        {
-            return true;
-        }
-
-        double distance = GeoUtility.distanceBetween(point.latitude, point.longitude,
-                lastPoint.latitude, lastPoint.longitude);
-
-        if (distance > DISTANCE_FILTER)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     private void applyGPSBasedSettings()
     {
+        Ln.i("Applying GPS based setting...");
+
         // remove updates in order to add GPS only updates as GPS is available
         // now...
         locationManager.removeUpdates(this);
@@ -598,11 +657,14 @@ public class RidingActivity extends CommonActivity
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,GPS_UPDATE_INTERVAL,0,this);
 
         // update distance filter to higher accuracy...
-        DISTANCE_FILTER = 10;
+        currentDistanceFilter = DISTANCE_FILTER_GPS;
+        currentAccuracyFilter = ACCURACY_MINIMUM_GPS;
     }
 
     private void applyNetworkCarrierSettings()
     {
+        Ln.i("Applying network based setting...");
+
         // remove updates in order to add GPS only updates as GPS is available
         // now...
         locationManager.removeUpdates(this);
@@ -612,7 +674,8 @@ public class RidingActivity extends CommonActivity
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,GPS_UPDATE_INTERVAL,0,this);
 
         // update distance filter to higher accuracy...
-        DISTANCE_FILTER = 50;
+        currentDistanceFilter = DISTANCE_FILTER_NETWORK;
+        currentAccuracyFilter = ACCURACY_MINIMUM_NETWORK;
     }
 
     private void updateRidingResults(Location location)
@@ -625,21 +688,47 @@ public class RidingActivity extends CommonActivity
             rideHolder.setMaxSpeed(currentSpeed);
         }
 
-        // calculate avg speed...
-        float total = 0;
-        for (float value : rideHolder.getSpeedMeasurePoints())
-        {
-            total = total + value;
-        }
-        rideHolder.setAvgSpeed(total / rideHolder.getSpeedMeasurePoints().size());
+        // set avg speed...
+        // s=v*t <=> v=s/t
+        double avgSpeed = (rideHolder.getDistance()/1000)/timerUtility.getSeconds();
+        rideHolder.setAvgSpeed(avgSpeed);
 
         // calculate distance...
         rideHolder.setDistance(rideHolder.getDistance() + (location.distanceTo(previousLocation)));
 
         // set UI values...
-        tvMaxSpeed.setText(String.format("%.2f", 22.6767867));
+        tvMaxSpeed.setText(String.format("%.2f", rideHolder.getMaxSpeed()));
         tvAvgSpeed.setText(String.format("%.2f", rideHolder.getAvgSpeed()));
         tvDistance.setText(String.format("%.2f", rideHolder.getDistance()/1000));
+    }
+
+    // map helpers
+
+    private void applyMarkerAsStartPoint(LatLng position)
+    {
+        if (marker != null)
+        {
+            marker.remove();
+        }
+
+        marker = map.addMarker(new MarkerOptions().position(position).title("YOU"));
+
+        // move camera...
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+
+        // update marker
+        if (rideHolder.getWaypoints().size() > 0)
+        {
+            rideHolder.getWaypoints().set(0,position);
+        }
+        // add marker
+        else
+        {
+            rideHolder.getWaypoints().add(position);
+        }
+
+        // set start position...
+        rideHolder.setStartPosition(position);
     }
 
     // ------------------------------------------------------------------------
@@ -720,6 +809,10 @@ public class RidingActivity extends CommonActivity
             progressBar.setVisibility(View.GONE);
 
             Toast.makeText(getApplicationContext(),"Saved ride...",Toast.LENGTH_LONG).show();
+
+            // switch to rides overview...
+            Intent ridesActivityIntent = new Intent(getApplicationContext(),RidesActivity.class);
+            startActivity(ridesActivityIntent);
         }
     }
 

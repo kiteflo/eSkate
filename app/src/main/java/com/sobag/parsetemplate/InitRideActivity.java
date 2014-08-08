@@ -8,10 +8,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.inject.Inject;
 import com.makeramen.RoundedImageView;
 import com.sobag.parsetemplate.domain.Board;
+import com.sobag.parsetemplate.domain.RideHolder;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
 import com.sobag.parsetemplate.lists.BoardListAdapter;
 import com.sobag.parsetemplate.services.ParseRequestService;
@@ -35,6 +37,9 @@ public class InitRideActivity extends CommonActivity
     @Nullable
     @InjectView(tag = "progressBar")
     ProgressBar progressBar;
+
+    @Inject
+    RideHolder rideHolder;
 
     @Inject
     FontUtility fontUtility;
@@ -66,16 +71,21 @@ public class InitRideActivity extends CommonActivity
                 FontApplicableComponent.TEXT_VIEW);
 
         // fetch boards...
-        // display loading indicator...
-        progressBar.setVisibility(View.VISIBLE);
         parseRequestService.fetchBoards(this);
 
     }
 
     public void onNext(View view)
     {
-        Intent locationActivityIntent = new Intent(this,LocationActivity.class);
-        startActivity(locationActivityIntent);
+        if (rideHolder.getBoard() == null)
+        {
+            Toast.makeText(this,getString(R.string.msg_select_board),Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            Intent ridingActivityIntent = new Intent(this, RidingActivity.class);
+            startActivity(ridingActivityIntent);
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -84,7 +94,7 @@ public class InitRideActivity extends CommonActivity
 
     @Override
     public void handleStartRequest() {
-
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -94,7 +104,7 @@ public class InitRideActivity extends CommonActivity
         // display loading indicator...
         progressBar.setVisibility(View.GONE);
 
-        List<Board> boardList = (List<Board>)result;
+        final List<Board> boardList = (List<Board>)result;
 
         BoardListAdapter bla = new BoardListAdapter(getApplicationContext(),
                 boardList, fontUtility);
@@ -127,6 +137,10 @@ public class InitRideActivity extends CommonActivity
                 ivImage.setBorderColor(getResources().getColor(R.color.poisonGreen));
 
                 currentlySelectedItem = view;
+
+                // set board...
+                Board board = boardList.get(position);
+                rideHolder.setBoard(board);
             }
         });
     }

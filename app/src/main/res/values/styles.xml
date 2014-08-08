@@ -105,8 +105,22 @@
     <!-- *********************************************************************** -->
     <!-- LISTS                                                                   -->
     <!-- *********************************************************************** -->
+
+    <!-- rides -->
     <style name="list_title">
         <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">15dp</item>
+    </style>
+
+    <!-- boards -->
+    <style name="list_title_rides">
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">20dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="list_date">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">14dp</item>
     </style>
 </resources>

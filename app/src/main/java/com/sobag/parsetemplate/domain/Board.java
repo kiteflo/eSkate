@@ -52,4 +52,6 @@ public class Board extends ParseObject
     public void setImage(ParseFile image) {
         put("image",image);
     }
+
+    public void resetImage() {image = null;}
 }

@@ -11,7 +11,40 @@
         android:layout_width="fill_parent"
         android:layout_height="3dp"
         android:background="@color/poisonGreen"/>
+
+    <TextView
+        android:tag="tv_title_rides"
+        android:id="@+id/tv_title_rides"
+        style="@style/section_title_top"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/title_rides"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="30dp"/>
+    <View
+        style="@style/section_title_board_divider"
+        android:id="@+id/view_tv_board_divider"
+        android:layout_below="@+id/tv_title_rides"
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        />
+
+    <ListView
+        android:id="@+id/lv_rides"
+        android:layout_below="@+id/view_tv_board_divider"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:padding="10dp"
+        android:divider="@drawable/list_divider"
+        android:dividerHeight="1px"
+        android:layout_above="@+id/custom_button">
+    </ListView>
+
     <com.sobag.module.customButton.CustomButton
+        android:id="@+id/custom_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:onClick="onCreateRide"
@@ -20,5 +53,14 @@
         custom:buttonIcon="@drawable/lock_161"
         custom:showIcon="false"
         />
+
+    <ProgressBar
+        android:tag="progressBar"
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"/>
 
 </RelativeLayout>

@@ -1,14 +1,18 @@
 package com.sobag.parsetemplate.domain;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import roboguice.inject.ContextSingleton;
+
 /**
  * Group ride properties...
  */
+@Singleton
 public class RideHolder
 {
     // ------------------------------------------------------------------------
@@ -22,11 +26,13 @@ public class RideHolder
     private LatLng endPosition;
     private List<LatLng> waypoints = new ArrayList<LatLng>();
     private List<String> rideImages = new ArrayList<String>();
-    private List<Float> speedMeasurePoints = new ArrayList<Float>();
+    private List<Double> speedMeasurePoints = new ArrayList<Double>();
     private double maxSpeed;
     private double avgSpeed;
     private double distance;
     private String mapImage;
+    private Board board;
+    private String duration;
 
     // ------------------------------------------------------------------------
     // constructors
@@ -117,12 +123,12 @@ public class RideHolder
         this.mapImage = mapImage;
     }
 
-    public List<Float> getSpeedMeasurePoints()
+    public List<Double> getSpeedMeasurePoints()
     {
         return speedMeasurePoints;
     }
 
-    public void setSpeedMeasurePoints(List<Float> speesMeasurePoints)
+    public void setSpeedMeasurePoints(List<Double> speesMeasurePoints)
     {
         this.speedMeasurePoints = speesMeasurePoints;
     }
@@ -155,5 +161,25 @@ public class RideHolder
     public void setEndTime(Date endTime)
     {
         this.endTime = endTime;
+    }
+
+    public Board getBoard()
+    {
+        return board;
+    }
+
+    public void setBoard(Board board)
+    {
+        this.board = board;
+    }
+
+    public String getDuration()
+    {
+        return duration;
+    }
+
+    public void setDuration(String duration)
+    {
+        this.duration = duration;
     }
 }

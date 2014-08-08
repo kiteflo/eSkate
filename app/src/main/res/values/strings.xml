@@ -47,8 +47,9 @@
     <string name="hello_world">Hello world!</string>
 
     <!-- ride overview page -->
-    <string name="title_activity_rides">my rides</string>
+    <string name="title_activity_rides">rides</string>
     <string name="but_new_ride">start new ride</string>
+    <string name="title_rides">YOUR RIDES</string>
 
     <!-- ride init page -->
     <string name="title_activity_init_ride">Prepare ride...</string>
@@ -72,10 +73,15 @@
     <string name="but_save">save \u0026 finish</string>
     <string name="lab_rideHolder">\u0027a glorious ride in the park...!\u0027</string>
     <string name="header_description">DESCRIBE YOUR RIDE</string>
-    <string name="lab_share_eskate">share ride on eSkate</string>
-    <string name="lab_share_fb">share ride on facebook</string>
+    <string name="lab_share_eskate">publish ride on eSkate</string>
+    <string name="lab_share_fb">publish ride on facebook</string>
 
     <!-- toast messages -->
     <string name="msg_paused">your eSkate activity is paused now...</string>
+    <string name="msg_select_board">you have to select your weapon...</string>
+    <string name="title_activity_ride_summary">RideSummaryActivity</string>
+
+    <!-- ride summary -->
+
 
 </resources>

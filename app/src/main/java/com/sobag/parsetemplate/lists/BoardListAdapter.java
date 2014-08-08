@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.makeramen.RoundedImageView;
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.sobag.parsetemplate.R;
 import com.sobag.parsetemplate.domain.Board;
@@ -48,7 +49,10 @@ public class BoardListAdapter extends ArrayAdapter<Board>
     @Override
     public View getView(int position, View view, ViewGroup parent)
     {
-        Board board = boards.get(position);
+        final Board board = boards.get(position);
+
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 6;
 
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -62,17 +66,19 @@ public class BoardListAdapter extends ArrayAdapter<Board>
                 FontApplicableComponent.TEXT_VIEW);
 
         // setup image...
-        RoundedImageView ivImage = (RoundedImageView)rowView.findViewById(R.id.iv_image);
-        try
+        final RoundedImageView ivImage = (RoundedImageView)rowView.findViewById(R.id.iv_image);
+        board.getImage().getDataInBackground(new GetDataCallback()
         {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(board.getImage().getData(), 0, board.getImage().getData().length);
-            ivImage.setImageBitmap(bitmap);
-            ivImage.setImageAlpha(120);
-        }
-        catch (ParseException ex)
-        {
-            ex.printStackTrace();
-        }
+            @Override
+            public void done(byte[] bytes, ParseException e)
+            {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length,options);
+                ivImage.setImageBitmap(bitmap);
+                ivImage.setImageAlpha(120);
+
+                board.resetImage();
+            }
+        });
 
         return rowView;
     }

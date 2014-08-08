@@ -24,6 +24,11 @@ public class Waypoint extends ParseObject
     // required by Parse SDK
     public Waypoint(){}
 
+    public Waypoint(double latitude,double longitude)
+    {
+        waypoint = new ParseGeoPoint(latitude,longitude);
+    }
+
     // ------------------------------------------------------------------------
     // GETTER & SETTER
     // ------------------------------------------------------------------------

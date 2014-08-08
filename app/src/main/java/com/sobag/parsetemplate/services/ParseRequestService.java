@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Provider;
@@ -101,7 +102,21 @@ public class ParseRequestService
         requestListener.handleStartRequest();
 
         final Ride ride = new Ride();
+
+        // apply properties...
         ride.setTitle(rideHolder.getTitle());
+        ride.setStartTime(rideHolder.getStartTime());
+        ride.setEndTime(rideHolder.getEndTime());
+        ride.setStartPoint(new Waypoint(rideHolder.getStartPosition().latitude,
+                rideHolder.getStartPosition().longitude));
+        ride.setEndPoint(new Waypoint(rideHolder.getEndPosition().latitude,
+                rideHolder.getEndPosition().longitude));
+        ride.setAvgSpeed(rideHolder.getAvgSpeed());
+        ride.setMaxSpeed(rideHolder.getMaxSpeed());
+        ride.setDistance(rideHolder.getDistance());
+        ride.getBoard().add(rideHolder.getBoard());
+        ride.setDuration(rideHolder.getDuration());
+        ride.setRideDate(new Date());
 
         // apply map image...
         Bitmap mapImg = BitmapFactory.decodeFile(rideHolder.getMapImage());
@@ -279,6 +294,30 @@ public class ParseRequestService
                 {
                     Ln.e(e);
                     requestListener.handleParseRequestError(e);
+                }
+            }
+        });
+    }
+
+    public void fetchRidesForUser(final RequestListener requestListener)
+    {
+        requestListener.handleStartRequest();
+
+        final ParseQuery query = new ParseQuery("Ride");
+        query.whereEqualTo("user", ParseUser.getCurrentUser());
+        query.findInBackground(new FindCallback()
+        {
+            @Override
+            public void done(List list, ParseException e)
+            {
+                if (e == null)
+                {
+                    requestListener.handleRequestResult(list);
+                }
+                else
+                {
+                    requestListener.handleParseRequestError(e);
+                    Ln.e(e);
                 }
             }
         });

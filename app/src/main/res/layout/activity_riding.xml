@@ -66,99 +66,142 @@
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
                     android:orientation="horizontal">
-                    <LinearLayout
-                        android:id="@+id/ll_speedbar"
+                    <HorizontalScrollView
+                        android:id="@+id/hl_scroller"
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="0.9">
+                        android:layout_height="wrap_content">
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:id="@+id/ll_speedbar"
+                            android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.3"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            >
-                            <TextView
-                                android:tag="tv_distance"
-                                android:id="@+id/tv_distance"
-                                android:layout_width="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="1.2">
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="00.00"
-                                android:textSize="34dp"
-                                android:textColor="@color/white"
+                                android:layout_weight="0.3"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                >
+                                <TextView
+                                    android:tag="tv_distance"
+                                    android:id="@+id/tv_distance"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="00.00"
+                                    android:textSize="34dp"
+                                    android:textColor="@color/white"
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="distance (km)"
+                                    android:textColor="@color/white"
+                                    android:textSize="14dp"
+                                    />
+                            </LinearLayout>
+                            <View
+                                android:layout_width="0.5dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/poisonGreen"
+                                android:layout_marginRight="10dp"
+                                android:layout_marginLeft="10dp"
                                 />
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="distance (km)"
-                                android:textColor="@color/white"
-                                android:textSize="14dp"
-                                />
-                        </LinearLayout>
-                        <View
-                            android:layout_width="0.5dp"
-                            android:layout_height="match_parent"
-                            android:background="@color/poisonGreen"/>
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.3"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            >
-                            <TextView
-                                android:tag="tv_maxSpeed"
-                                android:id="@+id/tv_maxSpeed"
-                                android:layout_width="wrap_content"
+                                android:layout_weight="0.3"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                >
+                                <TextView
+                                    android:tag="tv_maxSpeed"
+                                    android:id="@+id/tv_maxSpeed"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="00.00"
+                                    android:textSize="34dp"
+                                    android:textColor="@color/white"
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="max speed (km)"
+                                    android:textSize="14dp"
+                                    android:textColor="@color/white"
+                                    />
+                            </LinearLayout>
+                            <View
+                                android:layout_width="0.5dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/poisonGreen"
+                                android:layout_marginRight="10dp"
+                                android:layout_marginLeft="10dp"/>
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="00.00"
-                                android:textSize="34dp"
-                                android:textColor="@color/white"
-                                />
-                            <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_weight="0.3"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                >
+                                <TextView
+                                    android:tag="tv_avgSpeed"
+                                    android:id="@+id/tv_avgSpeed"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="00.00"
+                                    android:textSize="34dp"
+                                    android:textColor="@color/white"
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="avg speed (km)"
+                                    android:textSize="14dp"
+                                    android:textColor="@color/white"
+                                    />
+                            </LinearLayout>
+
+                            <!-- timer -->
+                            <View
+                                android:layout_width="0.5dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/poisonGreen"
+                                android:layout_marginRight="10dp"
+                                android:layout_marginLeft="10dp"/>
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="max speed (km)"
-                                android:textSize="14dp"
-                                android:textColor="@color/white"
-                                />
-                        </LinearLayout>
-                        <View
-                            android:layout_width="0.5dp"
-                            android:layout_height="match_parent"
-                            android:background="@color/poisonGreen"/>
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.3"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            >
-                            <TextView
-                                android:tag="tv_avgSpeed"
-                                android:id="@+id/tv_avgSpeed"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="00.00"
-                                android:textSize="34dp"
-                                android:textColor="@color/white"
-                                />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="avg speed (km)"
-                                android:textSize="14dp"
-                                android:textColor="@color/white"
-                                />
+                                android:layout_weight="0.3"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                >
+                                <TextView
+                                    android:tag="tv_timer"
+                                    android:id="@+id/tv_timer"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="00:00:00"
+                                    android:textSize="34dp"
+                                    android:textColor="@color/white"
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="duration"
+                                    android:textSize="14dp"
+                                    android:textColor="@color/white"
+                                    />
+                            </LinearLayout>
+
                         </LinearLayout>
 
-                    </LinearLayout>
+                    </HorizontalScrollView>
 
                     <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:layout_below="@+id/ll_speedbar">
+                        android:layout_below="@+id/hl_scroller">
                         <ImageView
                             android:id="@+id/iv_photoButton"
                             android:layout_width="100dp"
@@ -315,12 +358,15 @@
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true">
+
+        <!-- protected pause/stop button -->
         <RelativeLayout
             android:tag="custom_button_protected"
             android:id="@+id/custom_button_protected"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:visibility="gone"
             >
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -391,6 +437,7 @@
                 android:layout_margin="0dp"/>
         </RelativeLayout>
 
+        <!-- unprotected pause/finish button -->
         <RelativeLayout
             android:tag="custom_button"
             android:id="@+id/custom_button"
@@ -471,6 +518,49 @@
                 android:layout_alignParentTop="true"
                 android:padding="0dp"
                 android:layout_margin="0dp"/>
+        </RelativeLayout>
+
+        <!-- unprotected start button -->
+        <RelativeLayout
+            android:tag="start_button"
+            android:id="@+id/start_button"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:visibility="visible"
+            >
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1.0">
+                <RelativeLayout
+                    android:tag="but_start"
+                    android:id="@+id/but_start"
+                    android:layout_weight="0.5"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    style="@style/signup_button_with_icon"
+                    android:clickable="true"
+                    android:onClick="onStart"
+                    >
+                    <TextView
+                        android:tag="tv_start"
+                        android:id="@+id/tv_start"
+                        style="@style/signup_button_with_icon_text"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:background="#00000000"
+                        android:text="@string/but_start"
+                        android:layout_centerInParent="true"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:gravity="center_horizontal"
+                        />
+                </RelativeLayout>
+            </LinearLayout>
         </RelativeLayout>
     </RelativeLayout>
 
