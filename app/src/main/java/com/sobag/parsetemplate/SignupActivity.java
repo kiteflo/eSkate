@@ -1,5 +1,6 @@
 package com.sobag.parsetemplate;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +9,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.Session;
+import com.facebook.SessionState;
 import com.google.inject.Inject;
 import com.mobsandgeeks.saripaar.Rule;
 import com.mobsandgeeks.saripaar.Validator;
@@ -17,11 +20,16 @@ import com.mobsandgeeks.saripaar.annotation.Password;
 import com.mobsandgeeks.saripaar.annotation.Required;
 import com.mobsandgeeks.saripaar.annotation.TextRule;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseUser;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
+import com.sobag.parsetemplate.fb.FacebookHandler;
 import com.sobag.parsetemplate.services.SignupListener;
 import com.sobag.parsetemplate.services.ParseSignupService;
 import com.sobag.parsetemplate.util.FontUtility;
 import com.sobag.parsetemplate.util.ResourceUtility;
+
+import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.Nullable;
 

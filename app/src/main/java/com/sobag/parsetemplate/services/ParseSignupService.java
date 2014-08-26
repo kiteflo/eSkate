@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.facebook.Session;
+import com.facebook.SessionState;
 import com.google.inject.Inject;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -12,8 +14,12 @@ import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 import com.sobag.parsetemplate.R;
 import com.sobag.parsetemplate.domain.User;
+import com.sobag.parsetemplate.fb.FacebookHandler;
 import com.sobag.parsetemplate.util.PreferenceProps;
 import com.sobag.parsetemplate.util.SharedPreferencesUtility;
+
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Provider;
 

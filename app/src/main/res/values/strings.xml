@@ -83,5 +83,6 @@
 
     <!-- ride summary -->
 
+    <string name="title_activity_bluetooth">BluetoothActivity</string>
 
 </resources>

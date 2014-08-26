@@ -75,7 +75,38 @@
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:weightSum="1.2">
+                            android:weightSum="1.5">
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.3"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                >
+                                <TextView
+                                    android:tag="tv_speed"
+                                    android:id="@+id/tv_speed"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="00.00"
+                                    android:textSize="34dp"
+                                    android:textColor="@color/white"
+                                    />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="speed (km)"
+                                    android:textColor="@color/white"
+                                    android:textSize="14dp"
+                                    />
+                            </LinearLayout>
+                            <View
+                                android:layout_width="0.5dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/poisonGreen"
+                                android:layout_marginRight="10dp"
+                                android:layout_marginLeft="10dp"
+                                />
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -301,6 +332,8 @@
                         android:layout_centerVertical="true"
                         />
                     <ToggleButton
+                        android:tag="toggle_eskate"
+                        android:id="@+id/toggle_eskate"
                         android:layout_width="50dp"
                         android:layout_height="28dp"
                         android:textOff=""
@@ -339,6 +372,8 @@
                         android:layout_centerVertical="true"
                         />
                     <ToggleButton
+                        android:tag="toggle_facebook"
+                        android:id="@+id/toggle_facebook"
                         android:layout_width="50dp"
                         android:layout_height="28dp"
                         android:textOff=""

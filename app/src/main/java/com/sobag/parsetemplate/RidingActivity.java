@@ -27,7 +27,9 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import com.facebook.Session;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -46,6 +48,7 @@ import com.sobag.parsetemplate.domain.Ride;
 import com.sobag.parsetemplate.domain.RideHolder;
 import com.sobag.parsetemplate.domain.Waypoint;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
+import com.sobag.parsetemplate.fb.FacebookHandler;
 import com.sobag.parsetemplate.services.ParseInitializationService;
 import com.sobag.parsetemplate.services.ParseRequestService;
 import com.sobag.parsetemplate.services.RequestListener;
@@ -66,6 +69,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -102,6 +106,10 @@ public class RidingActivity extends CommonActivity
     RelativeLayout butPause;
     @InjectView(tag = "view_divider_footer")
     View viewDividerFooter;
+    @InjectView(tag = "toggle_facebook")
+    ToggleButton toggleFacebook;
+    @InjectView(tag = "toggle_eskate")
+    ToggleButton toggleEskate;
 
     @InjectView(tag = "tv_distance")
     TextView tvDistance;
@@ -109,7 +117,8 @@ public class RidingActivity extends CommonActivity
     TextView tvAvgSpeed;
     @InjectView(tag = "tv_timer")
     TextView tvTimer;
-
+    @InjectView(tag = "tv_speed")
+    TextView tvSpeed;
     @InjectView(tag = "tv_maxSpeed")
     TextView tvMaxSpeed;
 
@@ -153,9 +162,9 @@ public class RidingActivity extends CommonActivity
     public static final int SATTELITE_UPDATE_INTERVAL = 0;
     public static double DISTANCE_FILTER_GPS = 8;
     public static double DISTANCE_FILTER_NETWORK = 15;
-    public static double DISTANCE_MAX_FILTER_NETWORK = 60;
+    public static double DISTANCE_MAX_FILTER_NETWORK = 30;
     private double currentDistanceFilter;
-    public static double ACCURACY_MINIMUM_GPS = 5;
+    public static double ACCURACY_MINIMUM_GPS = 30;
     public static double ACCURACY_MINIMUM_NETWORK = 30;
     private double currentAccuracyFilter;
     private Location previousLocation = null;
@@ -321,6 +330,21 @@ public class RidingActivity extends CommonActivity
                         .anchor(0.5f, 1));
             }
         }
+        // facebook permission added
+        else
+        {
+            Session session = Session.getActiveSession();
+
+            if (session.getPermissions().contains("publish_actions"))
+            {
+                FacebookHandler fbHandler = new FacebookHandler();
+                fbHandler.shareRideOnFacebook(rideHolder);
+            }
+            else
+            {
+                Toast.makeText(this,"Insufficient permissions....",Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -446,6 +470,25 @@ public class RidingActivity extends CommonActivity
 
             // trigger parse save operation...
             parseRequestService.saveRide(new SaveRideRequest(),rideHolder);
+
+            // share via facebook?
+            if (toggleFacebook.isChecked())
+            {
+                Session session = Session.getActiveSession();
+
+                if (! session.getPermissions().contains("publish_actions"))
+                {
+                    List permissions = Arrays.asList("publish_actions");
+                    Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(this, permissions);
+                    session.requestNewPublishPermissions(newPermissionsRequest);
+                }
+                else
+                {
+                    FacebookHandler fbHandler = new FacebookHandler();
+                    fbHandler.shareRideOnFacebook(rideHolder);
+                }
+            }
+
         }
     }
 
@@ -477,10 +520,6 @@ public class RidingActivity extends CommonActivity
     {
         // apply NETWORK settings...
         applyNetworkCarrierSettings();
-
-        // Define the criteria how to select the locatioin provider -> use
-        // default
-        Criteria criteria = new Criteria();
 
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,SATTELITE_UPDATE_INTERVAL,0,this);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,GPS_UPDATE_INTERVAL,0,this);
@@ -681,6 +720,8 @@ public class RidingActivity extends CommonActivity
     private void updateRidingResults(Location location)
     {
         currentSpeed = location.getSpeed()/1000;
+        tvSpeed.setText(String.format("%.2f", currentSpeed));
+
         rideHolder.getSpeedMeasurePoints().add(currentSpeed);
 
         if (currentSpeed > rideHolder.getMaxSpeed())
