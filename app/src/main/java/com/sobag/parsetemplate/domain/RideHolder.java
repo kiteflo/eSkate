@@ -30,6 +30,7 @@ public class RideHolder
     private double maxSpeed;
     private double avgSpeed;
     private double distance;
+    private double speed;
     private String mapImage;
     private Board board;
     private String duration;
@@ -42,6 +43,16 @@ public class RideHolder
     // GETTER & SETTER
     // ------------------------------------------------------------------------
 
+
+    public double getSpeed()
+    {
+        return speed;
+    }
+
+    public void setSpeed(double speed)
+    {
+        this.speed = speed;
+    }
 
     public LatLng getStartPosition()
     {
