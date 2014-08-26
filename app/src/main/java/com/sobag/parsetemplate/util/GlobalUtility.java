@@ -10,5 +10,6 @@ import java.text.SimpleDateFormat;
 public class GlobalUtility
 {
     public static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yy");
+    public static DateFormat dateAndTimeFormat = new SimpleDateFormat("dd.MM.yy, HH:mm");
     public static DecimalFormat decimalFormat = new DecimalFormat("#.##");
 }

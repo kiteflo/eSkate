@@ -129,7 +129,7 @@ public class RidesActivity extends CommonActivity
 
                 Intent rideSummaryActivity = new Intent(getApplicationContext(),RideSummaryActivity.class);
                 rideSummaryActivity.putExtra("title",ride.getTitle());
-                rideSummaryActivity.putExtra("date", GlobalUtility.dateFormat.format(ride.getRideDate()));
+                rideSummaryActivity.putExtra("date", GlobalUtility.dateAndTimeFormat.format(ride.getRideDate()));
                 rideSummaryActivity.putExtra("waypoints",ride.getWaypoints().toString());
 
                 rideSummaryActivity.putExtra("distance",ride.getDistance());
