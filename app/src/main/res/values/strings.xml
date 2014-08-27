@@ -66,6 +66,8 @@
     <!-- riding activity -->
     <string name="title_activity_riding">eSkating in action...</string>
     <string name="header_track">YOUR TRACK</string>
+    <string name="header_GPS">gps</string>
+    <string name="header_NETWORK">network</string>
     <string name="header_publish">PUBLISH</string>
     <string name="but_pause">pause</string>
     <string name="but_finish">finish</string>

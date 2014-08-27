@@ -93,6 +93,10 @@
     <style name="section_title_top">
         <item name="android:textColor">@color/hint_grey</item>
     </style>
+    <style name="section_title_provider">
+        <item name="android:textColor">@color/poisonGreen</item>
+        <item name="android:textSize">12dp</item>
+    </style>
 
     <style name="section_title_bottom">
         <item name="android:textColor">@color/hint_grey</item>
@@ -100,6 +104,16 @@
 
     <style name="section_title_board_divider">
         <item name="android:background">@color/hint_grey</item>
+    </style>
+
+    <!-- riding activity -->
+    <style name="average_value">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">24dp</item>
+    </style>
+    <style name="average_label">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">12dp</item>
     </style>
 
     <!-- *********************************************************************** -->

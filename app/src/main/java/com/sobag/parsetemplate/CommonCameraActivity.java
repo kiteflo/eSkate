@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
@@ -17,7 +18,7 @@ import roboguice.activity.RoboActivity;
  * title in action bar etc. - of our activities will extend this
  * class so adaptions will affect all activities.
  */
-public class CommonActivity extends RoboActivity
+public class CommonCameraActivity extends RoboActivity
 {
     // ------------------------------------------------------------------------
     // members
@@ -35,13 +36,15 @@ public class CommonActivity extends RoboActivity
     {
         super.onCreate(savedInstanceState);
 
-        // action bar experiment
+        // custom action bar
         final ActionBar actionBar = getActionBar();
-        actionBar.setCustomView(R.layout.actionbar_plain);
+
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setDisplayUseLogoEnabled(false);
         actionBar.setDisplayShowHomeEnabled(false);
+        View cView = getLayoutInflater().inflate(R.layout.actionbar_camera, null);
+        actionBar.setCustomView(cView);
 
         TextView yourTextView = (TextView) findViewById(R.id.ab_title);
         yourTextView.setTextColor(getResources().getColor(R.color.white));

@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -20,7 +19,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -37,38 +35,24 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.inject.Inject;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseGeoPoint;
-import com.parse.SaveCallback;
 import com.sobag.parsetemplate.domain.Ride;
 import com.sobag.parsetemplate.domain.RideHolder;
-import com.sobag.parsetemplate.domain.Waypoint;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
 import com.sobag.parsetemplate.fb.FacebookHandler;
-import com.sobag.parsetemplate.services.ParseInitializationService;
 import com.sobag.parsetemplate.services.ParseRequestService;
 import com.sobag.parsetemplate.services.RequestListener;
 import com.sobag.parsetemplate.util.BitmapUtility;
 import com.sobag.parsetemplate.util.FontUtility;
-import com.sobag.parsetemplate.util.GeoUtility;
 import com.sobag.parsetemplate.util.TimerUtility;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -78,7 +62,7 @@ import javax.annotation.Nullable;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 
-public class RidingActivity extends CommonActivity
+public class RidingActivity extends CommonCameraActivity
         implements LocationListener
 {
     // ------------------------------------------------------------------------
@@ -110,6 +94,8 @@ public class RidingActivity extends CommonActivity
     ToggleButton toggleFacebook;
     @InjectView(tag = "toggle_eskate")
     ToggleButton toggleEskate;
+    @InjectView(tag = "tv_provider")
+    TextView tvProvider;
 
     @InjectView(tag = "tv_distance")
     TextView tvDistance;
@@ -158,8 +144,10 @@ public class RidingActivity extends CommonActivity
     private Marker marker = null;
 
     // geo statics...
+    public static final int GPS_MIN_DISTANCE = 10;
+    public static final int NETWORK_MIN_DISTANCE = 15;
     public static final int GPS_UPDATE_INTERVAL = 0;
-    public static final int SATTELITE_UPDATE_INTERVAL = 0;
+    public static final int NETWORK_UPDATE_INTERVAL = 0;
     public static double DISTANCE_FILTER_GPS = 8;
     public static double DISTANCE_FILTER_NETWORK = 15;
     public static double DISTANCE_MAX_FILTER_NETWORK = 30;
@@ -211,10 +199,9 @@ public class RidingActivity extends CommonActivity
         fontUtility.applyFontToComponent(etRideTitle,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
 
+        // init map & location manager...
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.frag_map))
                 .getMap();
-
-        // init map & location manager...
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         initMapToCurrentPosition();
 
@@ -521,9 +508,6 @@ public class RidingActivity extends CommonActivity
         // apply NETWORK settings...
         applyNetworkCarrierSettings();
 
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,SATTELITE_UPDATE_INTERVAL,0,this);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,GPS_UPDATE_INTERVAL,0,this);
-
         // show progressbar...
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -560,53 +544,83 @@ public class RidingActivity extends CommonActivity
         float accuracy = location.getAccuracy();
         LatLng position = new LatLng(location.getLatitude(),location.getLongitude());
 
-        if (previousLocation != null)
+        if (paused)
         {
-            Ln.i("Provider: " + location.getProvider() + " | accuracy: " + accuracy + " | distance to previous: " + location.distanceTo(previousLocation));
-
-            if (previousLocation.getProvider().equals(LocationManager.NETWORK_PROVIDER) &&
-                    location.getProvider().equals(LocationManager.GPS_PROVIDER))
+            if (previousLocation != null)
             {
-                applyGPSBasedSettings();
-                previousLocation = location;
+                Ln.i("Provider: " + location.getProvider() + " | accuracy: " + accuracy + " | distance to previous: " + location.distanceTo(previousLocation));
 
-                // ride did not start, update marker...
-                if (rideHolder.getStartTime() == null)
+                // provider changed from network to gps
+                if (previousLocation.getProvider().equals(LocationManager.NETWORK_PROVIDER) &&
+                        location.getProvider().equals(LocationManager.GPS_PROVIDER))
+                {
+                    applyGPSBasedSettings();
+                    previousLocation = location;
+
+                    applyMarkerAsStartPoint(position);
+                }
+                // provider changed from gps to network
+                else if (previousLocation.getProvider().equals(LocationManager.GPS_PROVIDER) &&
+                        location.getProvider().equals(LocationManager.NETWORK_PROVIDER))
+                {
+                    applyNetworkCarrierSettings();
+
+                    if (location.distanceTo(previousLocation) > currentDistanceFilter && accuracy > currentAccuracyFilter
+                            && location.distanceTo(previousLocation) < DISTANCE_MAX_FILTER_NETWORK)
+                    {
+                        previousLocation = location;
+                    }
+                }
+                // provider did not change
+                else if (location.distanceTo(previousLocation) > currentDistanceFilter && accuracy > currentAccuracyFilter)
                 {
                     applyMarkerAsStartPoint(position);
                 }
             }
-            else if (previousLocation.getProvider().equals(LocationManager.GPS_PROVIDER) &&
-                    location.getProvider().equals(LocationManager.NETWORK_PROVIDER))
-            {
-                applyNetworkCarrierSettings();
 
-                if (location.distanceTo(previousLocation) > currentDistanceFilter && accuracy > currentAccuracyFilter
-                        && location.distanceTo(previousLocation) < DISTANCE_MAX_FILTER_NETWORK)
-                {
-                    previousLocation = location;
-                }
+            // virgin point
+            else
+            {
+                applyMarkerAsStartPoint(position);
+
+                previousLocation = location;
             }
         }
 
-        // virgin point
+        // non paused
         else
         {
-            applyMarkerAsStartPoint(position);
-
-            previousLocation = location;
-        }
-
-
-        if (location.distanceTo(previousLocation) > currentDistanceFilter && accuracy > currentAccuracyFilter
-                && !paused && rideHolder.getStartTime() != null)
-        {
-            // check for max distance...
-            if (previousLocation.getProvider().length() != location.getProvider().length())
+            if (location.distanceTo(previousLocation) > currentDistanceFilter && accuracy > currentAccuracyFilter)
             {
-                if (location.distanceTo(previousLocation) < DISTANCE_MAX_FILTER_NETWORK)
+                // provider changed
+                if (previousLocation.getProvider().length() != location.getProvider().length())
+                {
+                    if (location.distanceTo(previousLocation) < DISTANCE_MAX_FILTER_NETWORK)
+                    {
+                        Ln.i("Adding waypoint to route...");
+
+                        // add waypoint to rideHolder
+                        rideHolder.getWaypoints().add(position);
+
+                        map.addPolyline(new PolylineOptions()
+                                .addAll(rideHolder.getWaypoints())
+                                .width(10)
+                                .color(Color.RED));
+
+                        // move camera...
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+
+                        // apply ride settings
+                        updateRidingResults(location);
+
+                        previousLocation = location;
+                    }
+                }
+                else
                 {
                     Ln.i("Adding waypoint to route...");
+
+                    tvProvider.setText(location.getProvider() + ":" +location.getAccuracy() + ":" +location.getSpeed());
 
                     // add waypoint to rideHolder
                     rideHolder.getWaypoints().add(position);
@@ -624,26 +638,6 @@ public class RidingActivity extends CommonActivity
 
                     previousLocation = location;
                 }
-            }
-            else
-            {
-                Ln.i("Adding waypoint to route...");
-
-                // add waypoint to rideHolder
-                rideHolder.getWaypoints().add(position);
-
-                map.addPolyline(new PolylineOptions()
-                        .addAll(rideHolder.getWaypoints())
-                        .width(10)
-                        .color(Color.RED));
-
-                // move camera...
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
-
-                // apply ride settings
-                updateRidingResults(location);
-
-                previousLocation = location;
             }
         }
     }
@@ -688,12 +682,15 @@ public class RidingActivity extends CommonActivity
     {
         Ln.i("Applying GPS based setting...");
 
+        // set header label
+        tvProvider.setText(getResources().getText(R.string.header_GPS));
+
         // remove updates in order to add GPS only updates as GPS is available
         // now...
         locationManager.removeUpdates(this);
 
         // add gps updates
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,GPS_UPDATE_INTERVAL,0,this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,GPS_UPDATE_INTERVAL,GPS_MIN_DISTANCE,this);
 
         // update distance filter to higher accuracy...
         currentDistanceFilter = DISTANCE_FILTER_GPS;
@@ -704,13 +701,16 @@ public class RidingActivity extends CommonActivity
     {
         Ln.i("Applying network based setting...");
 
+        // set header label
+        tvProvider.setText(getResources().getText(R.string.header_NETWORK));
+
         // remove updates in order to add GPS only updates as GPS is available
         // now...
         locationManager.removeUpdates(this);
 
         // add gps updates
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,GPS_UPDATE_INTERVAL,0,this);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,GPS_UPDATE_INTERVAL,0,this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,GPS_UPDATE_INTERVAL,GPS_MIN_DISTANCE,this);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,NETWORK_UPDATE_INTERVAL,NETWORK_MIN_DISTANCE,this);
 
         // update distance filter to higher accuracy...
         currentDistanceFilter = DISTANCE_FILTER_NETWORK;
@@ -720,7 +720,8 @@ public class RidingActivity extends CommonActivity
     private void updateRidingResults(Location location)
     {
         currentSpeed = location.getSpeed()/1000;
-        tvSpeed.setText(String.format("%.2f", currentSpeed));
+        // tvSpeed.setText(String.format("%.2f", currentSpeed));
+        tvSpeed.setText("20");
 
         rideHolder.getSpeedMeasurePoints().add(currentSpeed);
 

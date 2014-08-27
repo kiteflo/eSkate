@@ -7,11 +7,6 @@
     android:background="@color/default_background"
     >
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="3dp"
-        android:background="@color/poisonGreen"/>
-
     <TextView
         android:tag="tv_title_rides"
         android:id="@+id/tv_title_rides"

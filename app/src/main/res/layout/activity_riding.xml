@@ -36,14 +36,29 @@
                     android:orientation="vertical"
                     android:layout_weight="0.5"
                     >
-                    <TextView
-                        android:tag="tv_location"
-                        android:id="@+id/tv_location"
-                        style="@style/section_title_top"
+                    <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/header_track"
-                        android:paddingTop="30dp"/>
+                        android:paddingTop="30dp">
+                        <TextView
+                            android:tag="tv_location"
+                            android:id="@+id/tv_location"
+                            style="@style/section_title_top"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/header_track"
+                            android:layout_alignParentLeft="true"
+                            />
+                        <TextView
+                            android:tag="tv_provider"
+                            android:id="@+id/tv_provider"
+                            style="@style/section_title_provider"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/header_NETWORK"
+                            android:layout_alignParentRight="true"
+                            />
+                    </RelativeLayout>
                     <View
                         style="@style/section_title_board_divider"
                         android:id="@+id/view_divider"
@@ -65,17 +80,20 @@
                     android:layout_weight="0.5"
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
-                    android:orientation="horizontal">
-                    <HorizontalScrollView
-                        android:id="@+id/hl_scroller"
+                    >
+                    <LinearLayout
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="fill_parent"
+                        android:orientation="vertical"
+                        android:weightSum="1.5">
                         <LinearLayout
                             android:id="@+id/ll_speedbar"
                             android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
                             android:orientation="horizontal"
-                            android:weightSum="1.5">
+                            >
+                            <!-- avg speed -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -84,22 +102,21 @@
                                 android:gravity="center"
                                 >
                                 <TextView
-                                    android:tag="tv_speed"
-                                    android:id="@+id/tv_speed"
+                                    android:tag="tv_avgSpeed"
+                                    android:id="@+id/tv_avgSpeed"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="00.00"
-                                    android:textSize="34dp"
-                                    android:textColor="@color/white"
+                                    style="@style/average_value"
                                     />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="speed (km)"
-                                    android:textColor="@color/white"
-                                    android:textSize="14dp"
+                                    android:text="avg speed (km)"
+                                    style="@style/average_label"
                                     />
                             </LinearLayout>
+
                             <View
                                 android:layout_width="0.5dp"
                                 android:layout_height="match_parent"
@@ -120,15 +137,13 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="00.00"
-                                    android:textSize="34dp"
-                                    android:textColor="@color/white"
+                                    style="@style/average_value"
                                     />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="distance (km)"
-                                    android:textColor="@color/white"
-                                    android:textSize="14dp"
+                                    style="@style/average_label"
                                     />
                             </LinearLayout>
                             <View
@@ -151,55 +166,27 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="00.00"
-                                    android:textSize="34dp"
-                                    android:textColor="@color/white"
+                                    style="@style/average_value"
                                     />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="max speed (km)"
-                                    android:textSize="14dp"
-                                    android:textColor="@color/white"
+                                    style="@style/average_label"
                                     />
                             </LinearLayout>
-                            <View
-                                android:layout_width="0.5dp"
-                                android:layout_height="match_parent"
-                                android:background="@color/poisonGreen"
-                                android:layout_marginRight="10dp"
-                                android:layout_marginLeft="10dp"/>
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.3"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                >
-                                <TextView
-                                    android:tag="tv_avgSpeed"
-                                    android:id="@+id/tv_avgSpeed"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="00.00"
-                                    android:textSize="34dp"
-                                    android:textColor="@color/white"
-                                    />
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="avg speed (km)"
-                                    android:textSize="14dp"
-                                    android:textColor="@color/white"
-                                    />
-                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_timebar"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp"
+                            android:orientation="horizontal"
+                            android:layout_weight="0.5"
+                            android:gravity="center"
+                            >
 
                             <!-- timer -->
-                            <View
-                                android:layout_width="0.5dp"
-                                android:layout_height="match_parent"
-                                android:background="@color/poisonGreen"
-                                android:layout_marginRight="10dp"
-                                android:layout_marginLeft="10dp"/>
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -216,23 +203,45 @@
                                     android:textSize="34dp"
                                     android:textColor="@color/white"
                                     />
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="duration"
-                                    android:textSize="14dp"
-                                    android:textColor="@color/white"
-                                    />
                             </LinearLayout>
-
                         </LinearLayout>
 
-                    </HorizontalScrollView>
+                        <RelativeLayout
+                            android:id="@+id/ll_currentspeedbar"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            >
+
+                            <TextView
+                                android:tag="tv_speed"
+                                android:id="@+id/tv_speed"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="00.00"
+                                android:textSize="54dp"
+                                android:textColor="@color/white"
+                                android:layout_centerInParent="true"
+                                />
+                            <TextView
+                                android:paddingLeft="10dp"
+                                android:layout_toRightOf="@+id/tv_speed"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="km/h"
+                                android:textColor="@color/white"
+                                android:textSize="24dp"
+                                android:layout_centerVertical="true"
+                                />
+                        </RelativeLayout>
+                    </LinearLayout>
+
 
                     <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:layout_below="@+id/hl_scroller">
+                        android:layout_below="@+id/hl_scroller_top"
+                        android:visibility="gone">
                         <ImageView
                             android:id="@+id/iv_photoButton"
                             android:layout_width="100dp"
@@ -241,7 +250,8 @@
                             android:layout_centerInParent="true"
                             android:clickable="true"
                             android:focusable="true"
-                            android:onClick="onTakePhoto"/>
+                            android:onClick="onTakePhoto"
+                            android:visibility="gone"/>
                     </RelativeLayout>
                 </RelativeLayout>
             </LinearLayout>
