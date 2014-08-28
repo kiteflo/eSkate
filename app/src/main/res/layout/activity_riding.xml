@@ -393,6 +393,12 @@
                         android:layout_centerVertical="true"
                         />
                 </RelativeLayout>
+
+                <ImageView
+                    android:tag="iv_temp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/iv_temp"/>
             </LinearLayout>
 
         </LinearLayout>

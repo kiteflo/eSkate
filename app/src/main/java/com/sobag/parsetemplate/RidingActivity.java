@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.location.Location;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -96,6 +98,8 @@ public class RidingActivity extends CommonCameraActivity
     ToggleButton toggleEskate;
     @InjectView(tag = "tv_provider")
     TextView tvProvider;
+    @InjectView(tag = "iv_temp")
+    ImageView ivTemp;
 
     @InjectView(tag = "tv_distance")
     TextView tvDistance;
@@ -147,7 +151,7 @@ public class RidingActivity extends CommonCameraActivity
     public static final int GPS_MIN_DISTANCE = 2;
     public static final int GPS_ACCURACY = 12;
     public static final int NETWORK_MIN_DISTANCE = 5;
-    public static final int NETWORK_ACCURACY = 20;
+    public static final int NETWORK_ACCURACY = 15;
     public static final int GPS_UPDATE_INTERVAL = 0;
     public static final int NETWORK_UPDATE_INTERVAL = 0;
     public static double DISTANCE_MAX_FILTER_NETWORK = 30;
@@ -427,16 +431,6 @@ public class RidingActivity extends CommonCameraActivity
             // focus edittext
             etRideTitle.requestFocus();
 
-            // create map snapshot...
-            try
-            {
-                captureMapScreen();
-            }
-            catch (Exception e)
-            {
-                Ln.e(e);
-            }
-
             // apply button label...
             tvFinish.setText(getString(R.string.but_save));
 
@@ -446,33 +440,42 @@ public class RidingActivity extends CommonCameraActivity
         // save ride...
         else
         {
-            // prepare ride...
-            final Ride ride = new Ride();
-
-            // apply title...
-            rideHolder.setTitle(etRideTitle.getText().toString());
-
-            // trigger parse save operation...
-            parseRequestService.saveRide(new SaveRideRequest(),rideHolder);
-
-            // share via facebook?
-            if (toggleFacebook.isChecked())
+            // create map snapshot...finish ride is triggered via callback...
+            try
             {
-                Session session = Session.getActiveSession();
-
-                if (! session.getPermissions().contains("publish_actions"))
-                {
-                    List permissions = Arrays.asList("publish_actions");
-                    Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(this, permissions);
-                    session.requestNewPublishPermissions(newPermissionsRequest);
-                }
-                else
-                {
-                    FacebookHandler fbHandler = new FacebookHandler();
-                    fbHandler.shareRideOnFacebook(rideHolder);
-                }
+                captureMapScreen();
             }
+            catch (Exception e)
+            {
+                Ln.e(e);
+            }
+        }
+    }
 
+    private void finishRide()
+    {
+        // apply title...
+        rideHolder.setTitle(etRideTitle.getText().toString());
+
+        // trigger parse save operation...
+        parseRequestService.saveRide(new SaveRideRequest(),rideHolder);
+
+        // share via facebook?
+        if (toggleFacebook.isChecked())
+        {
+            Session session = Session.getActiveSession();
+
+            if (! session.getPermissions().contains("publish_actions"))
+            {
+                List permissions = Arrays.asList("publish_actions");
+                Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(this, permissions);
+                session.requestNewPublishPermissions(newPermissionsRequest);
+            }
+            else
+            {
+                FacebookHandler fbHandler = new FacebookHandler();
+                fbHandler.shareRideOnFacebook(rideHolder);
+            }
         }
     }
 
@@ -793,12 +796,102 @@ public class RidingActivity extends CommonCameraActivity
             public void onSnapshotReady(Bitmap snapshot)
             {
                 bitmap = snapshot;
+                Bitmap bitmapWithBorder = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight() + 150, bitmap.getConfig());
+
+                Canvas canvas = new Canvas(bitmapWithBorder);
+                canvas.drawColor(Color.WHITE);
+                canvas.drawBitmap(bitmap, 0, 0, null);
+
+                // distance value
+                Paint distance = new Paint(Paint.ANTI_ALIAS_FLAG);
+                // text color - #3D3D3D
+                distance.setColor(Color.BLACK);
+                // text size in pixels
+                distance.setTextSize((int) (70));
+                // text shadow
+                distance.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+                int x = 0;
+                int y = bitmap.getHeight();
+                canvas.drawText(String.format("%.2f", rideHolder.getDistance() / 1000), x + 10, y + 80, distance);
+
+                // distance label
+                Paint distanceLabel = new Paint(Paint.ANTI_ALIAS_FLAG);
+                // text color - #3D3D3D
+                distanceLabel.setColor(Color.BLACK);
+                // text size in pixels
+                distanceLabel.setTextSize((int) (30));
+                // text shadow
+                distanceLabel.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+                int xLab = 0;
+                int yLab = bitmap.getHeight();
+                canvas.drawText("distance (km)", xLab + 10, yLab + 110, distanceLabel);
+
+                // seperator
+                Paint line = new Paint(Paint.ANTI_ALIAS_FLAG);
+                canvas.drawLine(x + 220, y + 20, x +220, y+ 120, line);
+
+                // time value
+                Paint time = new Paint(Paint.ANTI_ALIAS_FLAG);
+                // text color - #3D3D3D
+                time.setColor(Color.BLACK);
+                // text size in pixels
+                time.setTextSize((int) (70));
+                // text shadow
+                time.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+                int xTime = 240;
+                int yTime = bitmap.getHeight();
+                canvas.drawText(rideHolder.getDuration(), xTime + 10, yTime + 80, time);
+
+                // time label
+                Paint timeLabel = new Paint(Paint.ANTI_ALIAS_FLAG);
+                // text color - #3D3D3D
+                timeLabel.setColor(Color.BLACK);
+                // text size in pixels
+                timeLabel.setTextSize((int) (30));
+                // text shadow
+                timeLabel.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+                int xTimeLab = 240;
+                int yTimeLab = bitmap.getHeight();
+                canvas.drawText("duration", xTimeLab + 10, yTimeLab + 110, timeLabel);
+
+                // seperator
+                Paint line2 = new Paint(Paint.ANTI_ALIAS_FLAG);
+                canvas.drawLine(x + 570, y + 20, x +560, y+ 120, line2);
+
+                // maxSpeed value
+                Paint maxSpeed = new Paint(Paint.ANTI_ALIAS_FLAG);
+                // text color - #3D3D3D
+                maxSpeed.setColor(Color.BLACK);
+                // text size in pixels
+                maxSpeed.setTextSize((int) (70));
+                // text shadow
+                maxSpeed.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+                int xMax = 580;
+                int yMax = bitmap.getHeight();
+                canvas.drawText(String.format("%.2f", rideHolder.getMaxSpeed()), xMax + 10, yMax + 80, maxSpeed);
+
+                // time label
+                Paint maxLabel = new Paint(Paint.ANTI_ALIAS_FLAG);
+                // text color - #3D3D3D
+                maxLabel.setColor(Color.BLACK);
+                // text size in pixels
+                maxLabel.setTextSize((int) (30));
+                // text shadow
+                maxLabel.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+                int xMaxLab = 580;
+                int yMaxLab = bitmap.getHeight();
+                canvas.drawText("max speed (km)", xMaxLab + 10, yMaxLab + 110, timeLabel);
+
                 try
                 {
                     FileOutputStream out = new FileOutputStream(snapshotFile);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+                    bitmapWithBorder.compress(Bitmap.CompressFormat.PNG, 90, out);
 
                     rideHolder.setMapImage(snapshotFile.getAbsolutePath());
+                    ivTemp.setImageBitmap(bitmapWithBorder);
+
+                    // parse request stuff...
+                    finishRide();
                 }
                 catch (Exception e)
                 {
