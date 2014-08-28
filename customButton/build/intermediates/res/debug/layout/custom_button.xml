@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/button_with_icon"
+                >
+    <TextView
+        android:tag="tv_label"
+        android:id="@+id/tv_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:background="#00000000"
+        android:text="Hello World!"
+        android:layout_centerInParent="true"
+        android:padding="10dp"
+        android:textSize="20dp"
+        android:textColor="@color/white"
+        />
+    <ImageView
+        android:id="@+id/iv_icon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_toLeftOf="@+id/tv_label"
+        android:layout_centerVertical="true"
+        />
+</RelativeLayout><!-- From: file:/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/main/res/layout/custom_button.xml -->

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:state_pressed="true"
+        android:state_enabled="true"
+        android:drawable="@color/poisonGreenHighlighted"
+        />
+    <item
+        android:state_focused="true"
+        android:state_enabled="true"
+        android:drawable="@color/poisonGreen"/>
+    <item
+        android:state_focused="false"
+        android:state_enabled="false"
+        android:drawable="@color/poisonGreen"/>
+    <item android:drawable="@color/poisonGreen"/>
+</selector><!-- From: file:/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/main/res/drawable/but_selector.xml -->

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="2" >
+
+    <dataSet config="main" >
+        <source path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/main/res" >
+            <file
+                name="world"
+                path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/main/res/drawable/world.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="custom_button"
+                path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/main/res/layout/custom_button.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/main/res/values/attrs.xml"
+                qualifiers="" >
+                <declare-styleable name="CustomButton" >
+                    <attr
+                        name="buttonTitle"
+                        format="string" />
+                    <attr
+                        name="buttonIcon"
+                        format="reference" />
+                    <attr
+                        name="showIcon"
+                        format="boolean" />
+                    <!--
+        not possible by now to pass drawables...
+        android issue..:
+        see...: https://code.google.com/p/android/issues/detail?id=26251
+
+        <attr name="buttonBackgroundColor" format="string" />
+        <attr name="buttonBackgroundColorHighlighted" format="string" />
+                    -->
+                </declare-styleable>
+            </file>
+            <file
+                path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/main/res/values/colors.xml"
+                qualifiers="" >
+                <color name="poisonGreenHighlighted" >#94d600
+                </color>
+                <color name="white" >#FFFFFF
+                </color>
+                <color name="poisonGreen" >#648f00
+                </color>
+            </file>
+            <file
+                path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/main/res/values/strings.xml"
+                qualifiers="" >
+                <string name="app_name" >customButton
+                </string>
+            </file>
+            <file
+                path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/main/res/values/styles.xml"
+                qualifiers="" >
+
+                <style name="button_with_icon" >
+                    <item name="android:background">
+@drawable/but_selector
+                    </item>
+                </style>
+            </file>
+            <file
+                name="but_selector"
+                path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/main/res/drawable/but_selector.xml"
+                qualifiers=""
+                type="drawable" />
+        </source>
+        <source path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/build/generated/res/rs/release" />
+        <source path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/build/generated/res/generated/release" />
+    </dataSet>
+    <dataSet config="release" >
+        <source path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/release/res" />
+    </dataSet>
+
+</merger>
