@@ -856,7 +856,7 @@ public class RidingActivity extends CommonCameraActivity
 
                 // seperator
                 Paint line2 = new Paint(Paint.ANTI_ALIAS_FLAG);
-                canvas.drawLine(x + 570, y + 20, x +560, y+ 120, line2);
+                canvas.drawLine(x + 560, y + 20, x +560, y+ 120, line2);
 
                 // maxSpeed value
                 Paint maxSpeed = new Paint(Paint.ANTI_ALIAS_FLAG);
