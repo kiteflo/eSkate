@@ -165,7 +165,10 @@ public class RidingActivity extends CommonCameraActivity
     // timer
     private TimerUtility timerUtility;
 
-    private boolean paused = true;
+    // riding = a ride has been started
+    private boolean riding = false;
+    // paused = ride paused
+    private boolean paused = false;
 
     // ride tracking...
     private double currentSpeed = 0;
@@ -345,7 +348,7 @@ public class RidingActivity extends CommonCameraActivity
         rideHolder.setStartTime(new Date());
 
         // enable tracking
-        paused = false;
+        riding = true;
 
         if (previousLocation != null)
         {
@@ -544,7 +547,8 @@ public class RidingActivity extends CommonCameraActivity
         float accuracy = location.getAccuracy();
         LatLng position = new LatLng(location.getLatitude(),location.getLongitude());
 
-        if (paused)
+        // ride did not start...ride preparations
+        if (!riding)
         {
             if (previousLocation != null)
             {
@@ -586,8 +590,8 @@ public class RidingActivity extends CommonCameraActivity
             }
         }
 
-        // non paused
-        else
+        // ride it baby!
+        else if (!paused)
         {
             Ln.i("Received location, accuracy: " +location.getAccuracy());
 
