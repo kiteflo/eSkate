@@ -14,6 +14,10 @@
     <string name="but_register">REGISTER</string>
     <string name="but_register_loading">REGISTERING...</string>
 
+    <!-- drawer -->
+    <string name="drawer_open">open</string>
+    <string name="drawer_close">close</string>
+
     <!-- signup page -->
     <string name="title_activity_signup">SignupActivity</string>
     <string name="but_fbSignup">Facebook Signup</string>
@@ -84,7 +88,6 @@
     <string name="title_activity_ride_summary">RideSummaryActivity</string>
 
     <!-- ride summary -->
-
     <string name="title_activity_bluetooth">BluetoothActivity</string>
 
 </resources>

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.inject.Inject;
 import com.sobag.parsetemplate.services.InitializationListener;
 import com.sobag.parsetemplate.services.ParseInitializationService;
@@ -39,6 +40,7 @@ public class SplashActivity extends RoboActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Crashlytics.start(this);
         setContentView(R.layout.activity_splash);
 
         // init parse...

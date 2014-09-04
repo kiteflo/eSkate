@@ -1,5 +1,7 @@
 package com.sobag.parsetemplate.domain;
 
+import android.location.Address;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.inject.Singleton;
 
@@ -34,6 +36,7 @@ public class RideHolder
     private String mapImage;
     private Board board;
     private String duration;
+    private Address address;
 
     // ------------------------------------------------------------------------
     // constructors
@@ -192,5 +195,15 @@ public class RideHolder
     public void setDuration(String duration)
     {
         this.duration = duration;
+    }
+
+    public Address getAddress()
+    {
+        return address;
+    }
+
+    public void setAddress(Address address)
+    {
+        this.address = address;
     }
 }

@@ -84,6 +84,7 @@
             android:name=".BluetoothActivity"
             android:label="@string/title_activity_bluetooth" >
         </activity>
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="8c585603accdba447507723d7590958eaae4db84"/>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

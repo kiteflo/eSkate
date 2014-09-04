@@ -3,11 +3,16 @@ package com.sobag.parsetemplate;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Shader;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -39,6 +44,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.inject.Inject;
+import com.mobsandgeeks.saripaar.Rule;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.Required;
+import com.parse.ParseException;
 import com.sobag.parsetemplate.domain.Ride;
 import com.sobag.parsetemplate.domain.RideHolder;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
@@ -47,6 +56,7 @@ import com.sobag.parsetemplate.services.ParseRequestService;
 import com.sobag.parsetemplate.services.RequestListener;
 import com.sobag.parsetemplate.util.BitmapUtility;
 import com.sobag.parsetemplate.util.FontUtility;
+import com.sobag.parsetemplate.util.ResourceUtility;
 import com.sobag.parsetemplate.util.TimerUtility;
 
 import java.io.File;
@@ -58,6 +68,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.Nullable;
 
@@ -65,11 +76,13 @@ import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 
 public class RidingActivity extends CommonCameraActivity
-        implements LocationListener
+        implements LocationListener, Validator.ValidationListener
 {
     // ------------------------------------------------------------------------
     // members
     // ------------------------------------------------------------------------
+
+    private Validator validator;
 
     // service injection...
     @Inject
@@ -130,6 +143,7 @@ public class RidingActivity extends CommonCameraActivity
     @InjectView(tag = "tv_describe")
     TextView tvDescribe;
 
+    @Required(order = 1, message = "msg_requiredField")
     @InjectView(tag = "et_rideTitle")
     EditText etRideTitle;
 
@@ -190,6 +204,10 @@ public class RidingActivity extends CommonCameraActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_riding);
+
+        // init validator....
+        validator = new Validator(this);
+        validator.setValidationListener(this);
 
         // apply fonts
         fontUtility.applyFontToComponent(tvLocation,R.string.default_font,
@@ -339,6 +357,41 @@ public class RidingActivity extends CommonCameraActivity
     }
 
     // ------------------------------------------------------------------------
+    // validation implementation
+    // ------------------------------------------------------------------------
+
+    /**
+     * Validation passed...trigger server call...
+     */
+    public void onValidationSucceeded()
+    {
+        Ln.d("Validated successfully!");
+
+        finishRide();
+    }
+
+    public void onValidationFailed(View failedView, Rule<?> failedRule)
+    {
+        Ln.d("Validation failed!");
+
+        // little hack - within a module we can not specify a message ID directly
+        // within the annotation...so we define a string constant in the annotation
+        // which finally here will be translated...
+        String messageID = failedRule.getFailureMessage();
+        String translatedMessage = getString(ResourceUtility.getId(messageID, R.string.class));
+
+        if (failedView instanceof EditText)
+        {
+            failedView.requestFocus();
+            ((EditText) failedView).setError(translatedMessage);
+        }
+        else
+        {
+            Toast.makeText(this, translatedMessage, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // ------------------------------------------------------------------------
     // public usage
     // ------------------------------------------------------------------------
 
@@ -402,6 +455,9 @@ public class RidingActivity extends CommonCameraActivity
             // stop timer
             timerUtility.stopTimer();
 
+            // stop speeding
+            tvSpeed.setText(String.format("%.2f", 0));
+
             // set end point
             rideHolder.setEndPosition(new LatLng(previousLocation.getLatitude(),
                     previousLocation.getLongitude()));
@@ -438,11 +494,7 @@ public class RidingActivity extends CommonCameraActivity
             tvFinish.setText(getString(R.string.but_save));
 
             save = true;
-        }
 
-        // save ride...
-        else
-        {
             // create map snapshot...finish ride is triggered via callback...
             try
             {
@@ -452,6 +504,12 @@ public class RidingActivity extends CommonCameraActivity
             {
                 Ln.e(e);
             }
+        }
+
+        // save ride...
+        else
+        {
+            validator.validate();
         }
     }
 
@@ -490,6 +548,9 @@ public class RidingActivity extends CommonCameraActivity
             paused = true;
             tvPause.setText(getString(R.string.but_resume));
             timerUtility.pauseTimer();
+
+            // stop speeding
+            tvSpeed.setText(String.format("%.2f", 0));
         }
         else
         {
@@ -771,6 +832,24 @@ public class RidingActivity extends CommonCameraActivity
 
         // set start position...
         rideHolder.setStartPosition(position);
+
+        // set city...as this is so easy in Android! :)
+        // try to get city name...
+        if (rideHolder.getAddress() == null)
+        {
+            try
+            {
+                Geocoder gcd = new Geocoder(this, Locale.getDefault());
+                List<Address> addresses = gcd.getFromLocation(position.latitude, position.longitude, 1);
+                if (addresses.size() > 0)
+                {
+                    rideHolder.setAddress(addresses.get(0));
+                }
+            } catch (IOException ex)
+            {
+                rideHolder.setAddress(null);
+            }
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -800,91 +879,145 @@ public class RidingActivity extends CommonCameraActivity
             public void onSnapshotReady(Bitmap snapshot)
             {
                 bitmap = snapshot;
-                Bitmap bitmapWithBorder = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight() + 150, bitmap.getConfig());
+                // lets do some pixel magic!
+                // ratio footer : imageheight: 1:4.1
+                int imageHeight = bitmap.getHeight();
+                int imageWidth = bitmap.getWidth();
+
+                // calculate footer height...
+                int footerHeight = new Double(imageHeight / 4.1).intValue();
+
+                Bitmap bitmapWithBorder = Bitmap.createBitmap(bitmap.getWidth(), imageHeight + footerHeight, bitmap.getConfig());
 
                 Canvas canvas = new Canvas(bitmapWithBorder);
                 canvas.drawColor(Color.WHITE);
                 canvas.drawBitmap(bitmap, 0, 0, null);
+
+                // footer padding ratio: 44% padding, 56% text
+                int totalTextHeight = new Double(footerHeight * 0.56).intValue();
+
+                // large text : description ration = 70% large text, 30% small
+                int largeTextHeight = new Double(0.7 * totalTextHeight).intValue();
+                int smallTextHeight = new Double(0.3 * totalTextHeight).intValue();
+
+                // calculate default padding
+                int padding = new Double((footerHeight * 0.44) / 2).intValue();
+
+                // calculate default cell width (ratio 1:4.57)
+                int defaulCellWidth = new Double(imageWidth / 4.57).intValue();
 
                 // distance value
                 Paint distance = new Paint(Paint.ANTI_ALIAS_FLAG);
                 // text color - #3D3D3D
                 distance.setColor(Color.BLACK);
                 // text size in pixels
-                distance.setTextSize((int) (70));
+                distance.setTextSize(largeTextHeight);
                 // text shadow
                 distance.setShadowLayer(1f, 0f, 1f, Color.WHITE);
-                int x = 0;
-                int y = bitmap.getHeight();
-                canvas.drawText(String.format("%.2f", rideHolder.getDistance() / 1000), x + 10, y + 80, distance);
+                int x = padding;
+                int y = bitmap.getHeight() + padding + largeTextHeight;
+                canvas.drawText(String.format("%.2f", rideHolder.getDistance() / 1000), x, y, distance);
 
                 // distance label
                 Paint distanceLabel = new Paint(Paint.ANTI_ALIAS_FLAG);
                 // text color - #3D3D3D
                 distanceLabel.setColor(Color.BLACK);
                 // text size in pixels
-                distanceLabel.setTextSize((int) (30));
+                distanceLabel.setTextSize(smallTextHeight);
                 // text shadow
                 distanceLabel.setShadowLayer(1f, 0f, 1f, Color.WHITE);
-                int xLab = 0;
-                int yLab = bitmap.getHeight();
-                canvas.drawText("distance (km)", xLab + 10, yLab + 110, distanceLabel);
+                x = x; // just for symmetric code reasons...
+                y = bitmap.getHeight() + padding + smallTextHeight + largeTextHeight;
+                canvas.drawText("distance (km)", x, y, distanceLabel);
 
                 // seperator
                 Paint line = new Paint(Paint.ANTI_ALIAS_FLAG);
-                canvas.drawLine(x + 220, y + 20, x +220, y+ 120, line);
+                canvas.drawLine(defaulCellWidth, bitmap.getHeight() + padding,
+                        defaulCellWidth,
+                        bitmap.getHeight() + padding + totalTextHeight, line);
+
+                int timeBoxWidth = new Double(1.5 * defaulCellWidth).intValue();
 
                 // time value
                 Paint time = new Paint(Paint.ANTI_ALIAS_FLAG);
                 // text color - #3D3D3D
                 time.setColor(Color.BLACK);
                 // text size in pixels
-                time.setTextSize((int) (70));
+                time.setTextSize(largeTextHeight);
                 // text shadow
                 time.setShadowLayer(1f, 0f, 1f, Color.WHITE);
-                int xTime = 240;
-                int yTime = bitmap.getHeight();
-                canvas.drawText(rideHolder.getDuration(), xTime + 10, yTime + 80, time);
+                x = defaulCellWidth + padding;
+                y = bitmap.getHeight() + padding + largeTextHeight;
+                canvas.drawText(rideHolder.getDuration(), x, y, time);
 
                 // time label
                 Paint timeLabel = new Paint(Paint.ANTI_ALIAS_FLAG);
                 // text color - #3D3D3D
                 timeLabel.setColor(Color.BLACK);
                 // text size in pixels
-                timeLabel.setTextSize((int) (30));
+                timeLabel.setTextSize(smallTextHeight);
                 // text shadow
                 timeLabel.setShadowLayer(1f, 0f, 1f, Color.WHITE);
-                int xTimeLab = 240;
-                int yTimeLab = bitmap.getHeight();
-                canvas.drawText("duration", xTimeLab + 10, yTimeLab + 110, timeLabel);
+                x = x;
+                y = y + smallTextHeight;
+                canvas.drawText("duration", x, y, timeLabel);
 
                 // seperator
                 Paint line2 = new Paint(Paint.ANTI_ALIAS_FLAG);
-                canvas.drawLine(x + 560, y + 20, x +560, y+ 120, line2);
+                canvas.drawLine(defaulCellWidth + timeBoxWidth, bitmap.getHeight() + padding,
+                        defaulCellWidth + timeBoxWidth, y, line2);
 
                 // maxSpeed value
                 Paint maxSpeed = new Paint(Paint.ANTI_ALIAS_FLAG);
                 // text color - #3D3D3D
                 maxSpeed.setColor(Color.BLACK);
                 // text size in pixels
-                maxSpeed.setTextSize((int) (70));
+                maxSpeed.setTextSize(largeTextHeight);
                 // text shadow
                 maxSpeed.setShadowLayer(1f, 0f, 1f, Color.WHITE);
-                int xMax = 580;
-                int yMax = bitmap.getHeight();
-                canvas.drawText(String.format("%.2f", rideHolder.getMaxSpeed()), xMax + 10, yMax + 80, maxSpeed);
+                x = defaulCellWidth + timeBoxWidth + padding;
+                y = bitmap.getHeight() + padding + largeTextHeight;
+                canvas.drawText(String.format("%.2f", rideHolder.getMaxSpeed()), x, y, maxSpeed);
 
                 // time label
                 Paint maxLabel = new Paint(Paint.ANTI_ALIAS_FLAG);
                 // text color - #3D3D3D
                 maxLabel.setColor(Color.BLACK);
                 // text size in pixels
-                maxLabel.setTextSize((int) (30));
+                maxLabel.setTextSize(smallTextHeight);
                 // text shadow
                 maxLabel.setShadowLayer(1f, 0f, 1f, Color.WHITE);
-                int xMaxLab = 580;
-                int yMaxLab = bitmap.getHeight();
-                canvas.drawText("max speed (km)", xMaxLab + 10, yMaxLab + 110, timeLabel);
+                x = x;
+                y = y + smallTextHeight;
+                canvas.drawText("max speed (km)", x, y, timeLabel);
+
+                // apply board...
+                try
+                {
+                    int yPos = imageHeight + footerHeight/2;
+                    int xPos = imageWidth -padding -50;
+
+                    Bitmap board = BitmapFactory.decodeByteArray(rideHolder.getBoard().getImage().getData(), 0,
+                            rideHolder.getBoard().getImage().getData().length);
+
+                    // keep aspect ration
+                    board = BitmapUtility.createSquaredBitmap(board);
+                    board = Bitmap.createScaledBitmap(board, 100, 100, false);
+                    board = BitmapUtility.cropImageToCircle(board);
+                    Paint paint = new Paint();
+                    paint.setAntiAlias(true);
+                    canvas.drawBitmap(board,xPos-50,yPos-50,paint);
+
+                    Paint border = new Paint();
+                    border.setXfermode(null);
+                    border.setStyle(Paint.Style.STROKE);
+                    border.setColor(getResources().getColor(R.color.poisonGreen));
+                    border.setStrokeWidth(2);
+                    canvas.drawCircle(xPos, yPos, 50, border);
+                } catch (ParseException ex)
+                {
+                    ex.printStackTrace();
+                }
 
                 try
                 {
@@ -893,9 +1026,6 @@ public class RidingActivity extends CommonCameraActivity
 
                     rideHolder.setMapImage(snapshotFile.getAbsolutePath());
                     ivTemp.setImageBitmap(bitmapWithBorder);
-
-                    // parse request stuff...
-                    finishRide();
                 }
                 catch (Exception e)
                 {

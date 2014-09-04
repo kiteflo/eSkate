@@ -6,7 +6,6 @@
     >
     <ImageView
         android:id="@+id/ab_icon"
-        android:onClick="Click"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:src="@drawable/ic_eskate"

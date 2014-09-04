@@ -38,6 +38,8 @@ public class Ride extends ParseObject
     private double avgSpeed;
     private ParseRelation<Board> board;
     private String duration;
+    private String city;
+    private String country;
 
     // helper properties...
     private List<RideImage> images = new ArrayList<RideImage>();
@@ -203,5 +205,25 @@ public class Ride extends ParseObject
     public void setDuration(String duration)
     {
         put("duration",duration);
+    }
+
+    public String getCity()
+    {
+        return getString("city");
+    }
+
+    public void setCity(String city)
+    {
+        put("city",city);
+    }
+
+    public String getCountry()
+    {
+        return getString("country");
+    }
+
+    public void setCountry(String country)
+    {
+        put("country",country);
     }
 }

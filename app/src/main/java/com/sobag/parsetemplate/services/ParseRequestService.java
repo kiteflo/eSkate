@@ -116,6 +116,11 @@ public class ParseRequestService
         ride.setDistance(rideHolder.getDistance());
         ride.getBoard().add(rideHolder.getBoard());
         ride.setDuration(rideHolder.getDuration());
+        if (rideHolder.getAddress() != null)
+        {
+            ride.setCity(rideHolder.getAddress().getLocality());
+            ride.setCountry(rideHolder.getAddress().getCountryName());
+        }
         ride.setRideDate(new Date());
 
         // apply map image...

@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.google.inject.Inject;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
@@ -34,7 +35,9 @@ import com.sobag.parsetemplate.domain.RideImage;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
 import com.sobag.parsetemplate.fb.FacebookHandler;
 import com.sobag.parsetemplate.lists.BoardListAdapter;
+import com.sobag.parsetemplate.lists.NavigationListAdapter;
 import com.sobag.parsetemplate.lists.RideListAdapter;
+import com.sobag.parsetemplate.lists.items.NavigationListItem;
 import com.sobag.parsetemplate.services.ParseRequestService;
 import com.sobag.parsetemplate.services.RequestListener;
 import com.sobag.parsetemplate.util.FontUtility;
@@ -42,6 +45,7 @@ import com.sobag.parsetemplate.util.GlobalUtility;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -69,7 +73,6 @@ public class RidesActivity extends CommonActivity
 
     @InjectView(tag = "tv_label")
     TextView tvLabel;
-
 
     // ------------------------------------------------------------------------
     // default stuff
