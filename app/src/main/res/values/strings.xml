@@ -8,6 +8,12 @@
     <!-- splash screen -->
     <string name="title_activity_splash">SplashActivity</string>
 
+    <!-- sidebar -->
+    <string name="item_ride_now">RIDE NOW!</string>
+    <string name="item_my_rides">my tracks</string>
+    <string name="item_my_achievements">achievements</string>
+    <string name="item_logout">logout</string>
+
     <!-- launch page -->
     <string name="but_login">LOGIN</string>
     <string name="but_login_loading">LOGGING IN...</string>

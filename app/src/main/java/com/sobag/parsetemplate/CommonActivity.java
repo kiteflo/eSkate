@@ -1,7 +1,9 @@
 package com.sobag.parsetemplate;
 
 import android.app.ActionBar;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,16 +14,23 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.widget.ProfilePictureView;
 import com.google.inject.Inject;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.makeramen.RoundedImageView;
+import com.parse.ParseUser;
+import com.sobag.parsetemplate.domain.ClientUser;
+import com.sobag.parsetemplate.enums.FontApplicableComponent;
 import com.sobag.parsetemplate.lists.NavigationListAdapter;
 import com.sobag.parsetemplate.lists.items.NavigationListItem;
 import com.sobag.parsetemplate.services.ParseLoginService;
+import com.sobag.parsetemplate.util.FontUtility;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import roboguice.activity.RoboActivity;
+import roboguice.inject.ContextSingleton;
 
 /**
  * A place to put common activity operations such as hiding
@@ -37,8 +46,21 @@ public class CommonActivity extends RoboActivity
     @Inject
     ParseLoginService parseLoginService;
 
+    @Inject
+    FontUtility fontUtility;
+
+    @Inject
+    ClientUser clientUser;
+
     // sliding menu
     private SlidingMenu menu;
+    private TextView tvUser;
+    private TextView tvLogout;
+    private TextView tvRideNow;
+    private TextView tvMyRides;
+    private TextView tvAchievements;
+    private ImageView ivUser;
+    private ProfilePictureView fbImage;
 
     // ------------------------------------------------------------------------
     // common stuff...
@@ -50,18 +72,27 @@ public class CommonActivity extends RoboActivity
         super.onCreate(savedInstanceState);
 
         // configure the SlidingMenu
-        List<NavigationListItem> items = new ArrayList<NavigationListItem>();
-        items.add(new NavigationListItem("Hello",R.drawable.ic_map));
-        items.add(new NavigationListItem("World!",R.drawable.ic_launcher));
-
         View view = getLayoutInflater().inflate(R.layout.sidebar_menu, null);
-        NavigationListAdapter nla = new NavigationListAdapter(getApplicationContext(),
-                R.layout.cell_navigation,
-                items);
+        // apply dynamic menu properties (user image, username etc.)
+        tvUser = (TextView)view.findViewById(R.id.tv_user);
+        tvLogout = (TextView)view.findViewById(R.id.tv_logout);
+        tvRideNow = (TextView)view.findViewById(R.id.tv_ride_now);
+        tvAchievements = (TextView)view.findViewById(R.id.tv_myachievements);
+        tvMyRides = (TextView)view.findViewById(R.id.tv_myrides);
+        ivUser = (RoundedImageView)view.findViewById(R.id.iv_image);
+        fbImage = (ProfilePictureView)view.findViewById(R.id.fb_image);
 
-        // fetch UI container and mixin contents...
-        ListView lvCustomers = (ListView)view.findViewById(R.id.lv_menu);
-        lvCustomers.setAdapter(nla);
+        // apply fonts
+        fontUtility.applyFontToComponent(tvUser,R.string.default_font,
+                FontApplicableComponent.TEXT_VIEW);
+        fontUtility.applyFontToComponent(tvMyRides,R.string.default_font,
+                FontApplicableComponent.TEXT_VIEW);
+        fontUtility.applyFontToComponent(tvAchievements,R.string.default_font,
+                FontApplicableComponent.TEXT_VIEW);
+        fontUtility.applyFontToComponent(tvLogout,R.string.default_font,
+                FontApplicableComponent.TEXT_VIEW);
+        fontUtility.applyFontToComponent(tvRideNow,R.string.special_font,
+                FontApplicableComponent.TEXT_VIEW);
 
         menu = new SlidingMenu(this);
         menu.setMode(SlidingMenu.LEFT);
@@ -72,6 +103,24 @@ public class CommonActivity extends RoboActivity
         menu.setFadeDegree(0.35f);
         menu.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
         menu.setMenu(view);
+        menu.setOnOpenListener(new SlidingMenu.OnOpenListener()
+        {
+            @Override
+            public void onOpen()
+            {
+                if (tvUser.getText() == null ||(tvUser.getText() != null && tvUser.getText().toString().trim().length() == 0))
+                {
+                    tvUser.setText(clientUser.getFirstname() + " " +clientUser.getLastname());
+                    ivUser.setImageBitmap(clientUser.getUserImage());
+                }
+
+                // apply rounded image
+                fbImage.setProfileId(clientUser.getFacebookID());
+                ImageView iv = ((ImageView)fbImage.getChildAt(0));
+                Bitmap bitmap = ((BitmapDrawable)iv.getDrawable()).getBitmap();
+                ivUser.setImageBitmap(bitmap);
+            }
+        });
 
         // action bar
         View aactionBarView = getLayoutInflater().inflate(R.layout.actionbar_plain, null);
@@ -123,6 +172,11 @@ public class CommonActivity extends RoboActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void applyMenuProperties(ClientUser user)
+    {
+        tvUser.setText(user.getFirstname() + " " + user.getLastname());
     }
 
     // ------------------------------------------------------------------------

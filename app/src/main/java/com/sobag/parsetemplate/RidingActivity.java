@@ -162,12 +162,12 @@ public class RidingActivity extends CommonCameraActivity
     private Marker marker = null;
 
     // geo statics...
-    public static final int GPS_MIN_DISTANCE = 2;
-    public static final int GPS_ACCURACY = 12;
+    public static final int GPS_MIN_DISTANCE = 5;
+    public static final int GPS_ACCURACY = 15;
     public static final int NETWORK_MIN_DISTANCE = 5;
-    public static final int NETWORK_ACCURACY = 15;
-    public static final int GPS_UPDATE_INTERVAL = 0;
-    public static final int NETWORK_UPDATE_INTERVAL = 0;
+    public static final int NETWORK_ACCURACY = 20;
+    public static final int GPS_UPDATE_INTERVAL = 5000;
+    public static final int NETWORK_UPDATE_INTERVAL = 10000;
     public static double DISTANCE_MAX_FILTER_NETWORK = 30;
     private Location previousLocation = null;
     private int currentAccuracy;
@@ -456,7 +456,7 @@ public class RidingActivity extends CommonCameraActivity
             timerUtility.stopTimer();
 
             // stop speeding
-            tvSpeed.setText(String.format("%.2f", 0));
+            tvSpeed.setText(String.format("%.2f", 0f));
 
             // set end point
             rideHolder.setEndPosition(new LatLng(previousLocation.getLatitude(),
@@ -550,7 +550,7 @@ public class RidingActivity extends CommonCameraActivity
             timerUtility.pauseTimer();
 
             // stop speeding
-            tvSpeed.setText(String.format("%.2f", 0));
+            tvSpeed.setText(String.format("%.2f", 0f));
         }
         else
         {
@@ -661,26 +661,23 @@ public class RidingActivity extends CommonCameraActivity
                 // provider changed
                 if (previousLocation.getProvider().length() != location.getProvider().length())
                 {
-                    if (location.distanceTo(previousLocation) < DISTANCE_MAX_FILTER_NETWORK)
-                    {
-                        Ln.i("Adding waypoint to route...");
+                    Ln.i("Adding waypoint to route...");
 
-                        // add waypoint to rideHolder
-                        rideHolder.getWaypoints().add(position);
+                    // add waypoint to rideHolder
+                    rideHolder.getWaypoints().add(position);
 
-                        map.addPolyline(new PolylineOptions()
-                                .addAll(rideHolder.getWaypoints())
-                                .width(10)
-                                .color(Color.RED));
+                    map.addPolyline(new PolylineOptions()
+                            .addAll(rideHolder.getWaypoints())
+                            .width(10)
+                            .color(Color.RED));
 
-                        // move camera...
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+                    // move camera...
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
 
-                        // apply ride settings
-                        updateRidingResults(location);
+                    // apply ride settings
+                    updateRidingResults(location);
 
-                        previousLocation = location;
-                    }
+                    previousLocation = location;
                 } else
                 {
                     Ln.i("Adding waypoint to route...");

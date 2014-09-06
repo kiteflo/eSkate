@@ -2,7 +2,14 @@ package com.sobag.parsetemplate.services;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
 import com.google.inject.Inject;
 import com.parse.FindCallback;
 import com.parse.Parse;
@@ -11,7 +18,9 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.sobag.parsetemplate.CommonActivity;
 import com.sobag.parsetemplate.domain.Board;
+import com.sobag.parsetemplate.domain.ClientUser;
 import com.sobag.parsetemplate.domain.Ride;
 import com.sobag.parsetemplate.domain.RideImage;
 import com.sobag.parsetemplate.domain.User;
@@ -20,6 +29,10 @@ import com.sobag.parsetemplate.util.PreferenceProps;
 import com.sobag.parsetemplate.R;
 import com.sobag.parsetemplate.util.SharedPreferencesUtility;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 import javax.inject.Provider;
@@ -41,6 +54,9 @@ public class ParseInitializationService
 
     @Inject
     InitializationListener initializationListener;
+
+    @Inject
+    ClientUser clientUser;
 
     // ------------------------------------------------------------------------
     // constructors
@@ -101,6 +117,27 @@ public class ParseInitializationService
         return new SharedPreferencesUtility(contextProvider.get()).checkIfFirstTimeAccess();
     }
 
+    // init client user
+    public void initClientUser()
+    {
+        if (clientUser == null)
+        {
+            clientUser = new ClientUser();
+        }
+
+        // facebook user?
+        Session session = ParseFacebookUtils.getSession();
+        if (session != null && session.isOpened())
+        {
+            makeMeRequest();
+        }
+        else
+        {
+            clientUser.setFirstname("TO");
+            clientUser.setLastname("DO");
+        }
+    }
+
     // ------------------------------------------------------------------------
     // dummy helper
     // ------------------------------------------------------------------------
@@ -133,9 +170,77 @@ public class ParseInitializationService
     // private usage
     // ------------------------------------------------------------------------
 
+    private void makeMeRequest() {
+        Request request = Request.newMeRequest(ParseFacebookUtils.getSession(),
+                new Request.GraphUserCallback() {
+                    @Override
+                    public void onCompleted(final GraphUser user, Response response) {
+                        if (user != null)
+                        {
+                            clientUser.setFirstname(user.getFirstName());
+                            clientUser.setLastname((user.getLastName()));
+                            clientUser.setFacebookID(user.getId());
+                            //new DownloadImagesTask("https://graph.facebook.com/" + user.getId() + "/picture?type=large").execute(clientUser);
+                            //new DownloadImagesTask("http://www.asklubo.com/uploads/attachments/published/2/9708/de/fische-richtig-putzen.jpg");
+
+                        }
+                    }
+                });
+        request.executeAsync();
+
+    }
+
     // ------------------------------------------------------------------------
     // inner classes
     // ------------------------------------------------------------------------
+
+    public class DownloadImagesTask extends AsyncTask<ClientUser, Void, Bitmap>
+    {
+        private ClientUser clientUser;
+        private String url;
+
+        public DownloadImagesTask(String url)
+        {
+            this.url = url;
+        }
+
+        @Override
+        protected Bitmap doInBackground(ClientUser... clientUser) {
+            this.clientUser = clientUser[0];
+            return download_Image(url);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            clientUser.setUserImage(result);
+        }
+
+        private Bitmap download_Image(String url)
+        {
+            HttpURLConnection urlConnection = null;
+            HttpURLConnection.setFollowRedirects(true);
+            Bitmap bmp =null;
+
+            try
+            {
+                URL urln = new URL(url);
+                urlConnection = (HttpURLConnection) urln.openConnection();
+                urlConnection.setInstanceFollowRedirects(true);
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                bmp = BitmapFactory.decodeStream(in);
+                if (bmp != null)
+                {
+                    return bmp;
+                }
+            }
+            catch (Exception ex)
+            {
+                Ln.e(ex);
+            }
+
+            return bmp;
+        }
+    }
 
     // ------------------------------------------------------------------------
     // GETTER & SETTER

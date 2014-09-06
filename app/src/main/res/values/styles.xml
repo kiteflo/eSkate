@@ -51,7 +51,7 @@
 
     <!-- signup button with icon...crappy stuff....see email signup... -->
     <style name="signup_button_with_icon">
-        <item name="android:background">@drawable/green_button_selector</item>
+        <item name="android:background">@drawable/green_selector</item>
     </style>
     <style name="action_button_with_protection">
         <item name="android:background">@drawable/blue_button_selector</item>
@@ -73,7 +73,7 @@
     </style>
 
     <style name="green_button_on_startscreen">
-        <item name="android:background">@drawable/green_button_selector</item>
+        <item name="android:background">@drawable/green_selector</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">20dp</item>
@@ -142,4 +142,30 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16dp</item>
     </style>
+
+    <!-- *********************************************************************** -->
+    <!-- sidebar menu                                                            -->
+    <!-- *********************************************************************** -->
+
+    <style name="sidebar_user">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">24dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="sidebar_logout">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">14dp</item>
+    </style>
+
+    <style name="sidebar_newRide">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">30dp</item>
+    </style>
+
+    <style name="sidebar_item">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">18dp</item>
+    </style>
+
 </resources>
