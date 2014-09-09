@@ -1,5 +1,6 @@
 package com.sobag.parsetemplate.domain;
 
+import android.graphics.Bitmap;
 import android.location.Address;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -34,6 +35,7 @@ public class RideHolder
     private double distance;
     private double speed;
     private String mapImage;
+    private Bitmap mapImageBitmap;
     private Board board;
     private String duration;
     private Address address;
@@ -205,5 +207,15 @@ public class RideHolder
     public void setAddress(Address address)
     {
         this.address = address;
+    }
+
+    public Bitmap getMapImageBitmap()
+    {
+        return mapImageBitmap;
+    }
+
+    public void setMapImageBitmap(Bitmap mapImageBitmap)
+    {
+        this.mapImageBitmap = mapImageBitmap;
     }
 }

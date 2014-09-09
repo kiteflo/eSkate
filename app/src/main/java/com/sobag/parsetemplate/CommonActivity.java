@@ -1,6 +1,7 @@
 package com.sobag.parsetemplate;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +25,7 @@ import com.sobag.parsetemplate.domain.ClientUser;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
 import com.sobag.parsetemplate.lists.NavigationListAdapter;
 import com.sobag.parsetemplate.lists.items.NavigationListItem;
+import com.sobag.parsetemplate.services.ParseInitializationService;
 import com.sobag.parsetemplate.services.ParseLoginService;
 import com.sobag.parsetemplate.util.FontUtility;
 
@@ -37,6 +40,7 @@ import roboguice.inject.ContextSingleton;
  * title in action bar etc. - of our activities will extend this
  * class so adaptions will affect all activities.
  */
+@ContextSingleton
 public class CommonActivity extends RoboActivity
 {
     // ------------------------------------------------------------------------
@@ -45,6 +49,8 @@ public class CommonActivity extends RoboActivity
 
     @Inject
     ParseLoginService parseLoginService;
+    @Inject
+    ParseInitializationService parseInitService;
 
     @Inject
     FontUtility fontUtility;
@@ -52,15 +58,21 @@ public class CommonActivity extends RoboActivity
     @Inject
     ClientUser clientUser;
 
+    private CommonActivity selfReference;
+
     // sliding menu
     private SlidingMenu menu;
     private TextView tvUser;
     private TextView tvLogout;
     private TextView tvRideNow;
     private TextView tvMyRides;
+    private TextView tvTotal;
     private TextView tvAchievements;
     private ImageView ivUser;
     private ProfilePictureView fbImage;
+
+    // buttons
+    private RelativeLayout rlRideNow;
 
     // ------------------------------------------------------------------------
     // common stuff...
@@ -70,6 +82,7 @@ public class CommonActivity extends RoboActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        selfReference = this;
 
         // configure the SlidingMenu
         View view = getLayoutInflater().inflate(R.layout.sidebar_menu, null);
@@ -78,14 +91,19 @@ public class CommonActivity extends RoboActivity
         tvLogout = (TextView)view.findViewById(R.id.tv_logout);
         tvRideNow = (TextView)view.findViewById(R.id.tv_ride_now);
         tvAchievements = (TextView)view.findViewById(R.id.tv_myachievements);
+        tvTotal = (TextView)view.findViewById(R.id.tv_total);
         tvMyRides = (TextView)view.findViewById(R.id.tv_myrides);
         ivUser = (RoundedImageView)view.findViewById(R.id.iv_image);
-        fbImage = (ProfilePictureView)view.findViewById(R.id.fb_image);
+        // action areas
+        rlRideNow = (RelativeLayout)view.findViewById(R.id.rl_rideNow);
+        rlRideNow.setOnClickListener(new RideNowAdapter());
 
         // apply fonts
         fontUtility.applyFontToComponent(tvUser,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
         fontUtility.applyFontToComponent(tvMyRides,R.string.default_font,
+                FontApplicableComponent.TEXT_VIEW);
+        fontUtility.applyFontToComponent(tvTotal,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
         fontUtility.applyFontToComponent(tvAchievements,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
@@ -112,10 +130,10 @@ public class CommonActivity extends RoboActivity
                 {
                     tvUser.setText(clientUser.getFirstname() + " " +clientUser.getLastname());
                     ivUser.setImageBitmap(clientUser.getUserImage());
+                    tvTotal.setText(getString(R.string.item_total,String.format("%.2f", clientUser.getTotalDistanceInMeters() / 1000)));
                 }
 
                 // apply rounded image
-                fbImage.setProfileId(clientUser.getFacebookID());
                 ImageView iv = ((ImageView)fbImage.getChildAt(0));
                 Bitmap bitmap = ((BitmapDrawable)iv.getDrawable()).getBitmap();
                 ivUser.setImageBitmap(bitmap);
@@ -134,6 +152,10 @@ public class CommonActivity extends RoboActivity
         // actionbar listeners...need to be set explicitly...
         TextView yourTextView = (TextView)aactionBarView.findViewById(R.id.ab_title);
         yourTextView.setTextColor(getResources().getColor(R.color.white));
+        fbImage = (ProfilePictureView)aactionBarView.findViewById(R.id.fb_image);
+        // fetch facebook user...
+        // init client user...fetch image etc...
+        parseInitService.initClientUser(fbImage);
 
         String desiredFont = getString(R.string.second_font);
         Typeface typeface = Typeface.createFromAsset(getAssets(),desiredFont);
@@ -174,9 +196,20 @@ public class CommonActivity extends RoboActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void applyMenuProperties(ClientUser user)
+    // ------------------------------------------------------------------------
+    // action handlers
+    // ------------------------------------------------------------------------
+
+    private class RideNowAdapter implements View.OnClickListener
     {
-        tvUser.setText(user.getFirstname() + " " + user.getLastname());
+        @Override
+        public void onClick(View v)
+        {
+            menu.toggle(true);
+
+            Intent initRideActivity = new Intent(selfReference,InitRideActivity.class);
+            startActivity(initRideActivity);
+        }
     }
 
     // ------------------------------------------------------------------------

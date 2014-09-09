@@ -35,6 +35,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.facebook.Session;
+import com.facebook.SessionState;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -51,6 +52,7 @@ import com.parse.ParseException;
 import com.sobag.parsetemplate.domain.Ride;
 import com.sobag.parsetemplate.domain.RideHolder;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
+import com.sobag.parsetemplate.enums.GenericRequestCode;
 import com.sobag.parsetemplate.fb.FacebookHandler;
 import com.sobag.parsetemplate.services.ParseRequestService;
 import com.sobag.parsetemplate.services.RequestListener;
@@ -83,6 +85,7 @@ public class RidingActivity extends CommonCameraActivity
     // ------------------------------------------------------------------------
 
     private Validator validator;
+    private RidingActivity selfReference;
 
     // service injection...
     @Inject
@@ -164,10 +167,10 @@ public class RidingActivity extends CommonCameraActivity
     // geo statics...
     public static final int GPS_MIN_DISTANCE = 5;
     public static final int GPS_ACCURACY = 15;
-    public static final int NETWORK_MIN_DISTANCE = 5;
-    public static final int NETWORK_ACCURACY = 20;
-    public static final int GPS_UPDATE_INTERVAL = 5000;
-    public static final int NETWORK_UPDATE_INTERVAL = 10000;
+    public static final int NETWORK_MIN_DISTANCE = 10;
+    public static final int NETWORK_ACCURACY = 35;
+    public static final int GPS_UPDATE_INTERVAL = 2000;
+    public static final int NETWORK_UPDATE_INTERVAL = 3000;
     public static double DISTANCE_MAX_FILTER_NETWORK = 30;
     private Location previousLocation = null;
     private int currentAccuracy;
@@ -183,6 +186,8 @@ public class RidingActivity extends CommonCameraActivity
     private boolean riding = false;
     // paused = ride paused
     private boolean paused = false;
+    // gps detector
+    private boolean gpsSignal = false;
 
     // ride tracking...
     private double currentSpeed = 0;
@@ -204,6 +209,7 @@ public class RidingActivity extends CommonCameraActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_riding);
+        selfReference = this;
 
         // init validator....
         validator = new Validator(this);
@@ -344,8 +350,20 @@ public class RidingActivity extends CommonCameraActivity
         {
             Session session = Session.getActiveSession();
 
+            // **************** IMPORTANT 24h hack *******************************
+            // parse/facebook session is not updated automatically after adding permissions...
+            // if you wanna have the newly added permissions you have to run through the if
+            // condition below, this will work...
+            if (session != null)
+            {
+                session.onActivityResult(this, requestCode, resultCode, data);
+            }
+
             if (session.getPermissions().contains("publish_actions"))
             {
+                // trigger parse save operation...
+                parseRequestService.saveRide(new SaveRideRequest(),rideHolder);
+
                 FacebookHandler fbHandler = new FacebookHandler();
                 fbHandler.shareRideOnFacebook(rideHolder);
             }
@@ -518,9 +536,6 @@ public class RidingActivity extends CommonCameraActivity
         // apply title...
         rideHolder.setTitle(etRideTitle.getText().toString());
 
-        // trigger parse save operation...
-        parseRequestService.saveRide(new SaveRideRequest(),rideHolder);
-
         // share via facebook?
         if (toggleFacebook.isChecked())
         {
@@ -536,6 +551,9 @@ public class RidingActivity extends CommonCameraActivity
             {
                 FacebookHandler fbHandler = new FacebookHandler();
                 fbHandler.shareRideOnFacebook(rideHolder);
+
+                // trigger parse save operation...
+                parseRequestService.saveRide(new SaveRideRequest(),rideHolder);
             }
         }
     }
@@ -544,13 +562,16 @@ public class RidingActivity extends CommonCameraActivity
     {
         if (!paused)
         {
-            Toast.makeText(this, getString(R.string.msg_paused), Toast.LENGTH_LONG).show();
+            locationManager.removeUpdates(this);
+
             paused = true;
             tvPause.setText(getString(R.string.but_resume));
             timerUtility.pauseTimer();
 
             // stop speeding
             tvSpeed.setText(String.format("%.2f", 0f));
+
+            Toast.makeText(this, getString(R.string.msg_paused), Toast.LENGTH_LONG).show();
         }
         else
         {
@@ -560,6 +581,15 @@ public class RidingActivity extends CommonCameraActivity
             custom_button_protected.setVisibility(View.VISIBLE);
             viewLockProtected.setVisibility(View.INVISIBLE);
             timerUtility.startTimer(tvTimer);
+
+            if (gpsSignal)
+            {
+                applyGPSBasedSettings();
+            }
+            else
+            {
+                applyNetworkCarrierSettings();
+            }
         }
     }
 
@@ -605,101 +635,51 @@ public class RidingActivity extends CommonCameraActivity
         // hide progressbar....
         progressBar.setVisibility(View.GONE);
 
-        float accuracy = location.getAccuracy();
         LatLng position = new LatLng(location.getLatitude(),location.getLongitude());
+
+        // GPS signal detected!
+        if (!gpsSignal && location.getProvider().equals(LocationManager.GPS_PROVIDER))
+        {
+            applyGPSBasedSettings();
+        }
+        else if (gpsSignal && location.getProvider().equals(LocationManager.NETWORK_PROVIDER))
+        {
+            applyNetworkCarrierSettings();
+        }
 
         // ride did not start...ride preparations
         if (!riding)
         {
-            if (previousLocation != null)
-            {
-                Ln.i("Provider: " + location.getProvider() + " | accuracy: " + accuracy + " | distance to previous: " + location.distanceTo(previousLocation));
+            applyMarkerAsStartPoint(position);
 
-                // provider changed from network to gps
-                if (previousLocation.getProvider().equals(LocationManager.NETWORK_PROVIDER) &&
-                        location.getProvider().equals(LocationManager.GPS_PROVIDER))
-                {
-                    applyGPSBasedSettings();
-                    previousLocation = location;
-
-                    applyMarkerAsStartPoint(position);
-                }
-                // provider changed from gps to network
-                else if (previousLocation.getProvider().equals(LocationManager.GPS_PROVIDER) &&
-                        location.getProvider().equals(LocationManager.NETWORK_PROVIDER))
-                {
-                    applyNetworkCarrierSettings();
-
-                    if (location.distanceTo(previousLocation) < DISTANCE_MAX_FILTER_NETWORK)
-                    {
-                        previousLocation = location;
-                    }
-                }
-                // provider did not change
-                else
-                {
-                    applyMarkerAsStartPoint(position);
-                }
-            }
-
-            // virgin point
-            else
-            {
-                applyMarkerAsStartPoint(position);
-
-                previousLocation = location;
-            }
+            previousLocation = location;
         }
 
         // ride it baby!
         else if (!paused)
         {
             Ln.i("Received location, accuracy: " +location.getAccuracy());
+            tvProvider.setText("cuac:" +currentAccuracy +" prov:" +location.getProvider() + " acc:" + location.getAccuracy() + " v:" + location.getSpeed());
 
             if (location.getAccuracy() <= currentAccuracy)
             {
-                // provider changed
-                if (previousLocation.getProvider().length() != location.getProvider().length())
-                {
-                    Ln.i("Adding waypoint to route...");
+                Ln.i("Adding waypoint to route...");
 
-                    // add waypoint to rideHolder
-                    rideHolder.getWaypoints().add(position);
+                // add waypoint to rideHolder
+                rideHolder.getWaypoints().add(position);
 
-                    map.addPolyline(new PolylineOptions()
-                            .addAll(rideHolder.getWaypoints())
-                            .width(10)
-                            .color(Color.RED));
+                map.addPolyline(new PolylineOptions()
+                        .addAll(rideHolder.getWaypoints())
+                        .width(10)
+                        .color(Color.BLUE));
 
-                    // move camera...
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+                // move camera...
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
 
-                    // apply ride settings
-                    updateRidingResults(location);
+                // apply ride settings
+                updateRidingResults(location);
 
-                    previousLocation = location;
-                } else
-                {
-                    Ln.i("Adding waypoint to route...");
-
-                    tvProvider.setText(location.getProvider() + ":" + location.getAccuracy() + ":" + location.getSpeed());
-
-                    // add waypoint to rideHolder
-                    rideHolder.getWaypoints().add(position);
-
-                    map.addPolyline(new PolylineOptions()
-                            .addAll(rideHolder.getWaypoints())
-                            .width(10)
-                            .color(Color.RED));
-
-                    // move camera...
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
-
-                    // apply ride settings
-                    updateRidingResults(location);
-
-                    previousLocation = location;
-                }
+                previousLocation = location;
             }
         }
     }
@@ -744,6 +724,8 @@ public class RidingActivity extends CommonCameraActivity
     {
         Ln.i("Applying GPS based setting...");
 
+        gpsSignal = true;
+
         // set header label
         tvProvider.setText(getResources().getText(R.string.header_GPS));
 
@@ -760,6 +742,8 @@ public class RidingActivity extends CommonCameraActivity
     private void applyNetworkCarrierSettings()
     {
         Ln.i("Applying network based setting...");
+
+        gpsSignal = false;
 
         // set header label
         tvProvider.setText(getResources().getText(R.string.header_NETWORK));
@@ -1019,9 +1003,14 @@ public class RidingActivity extends CommonCameraActivity
                 try
                 {
                     FileOutputStream out = new FileOutputStream(snapshotFile);
-                    bitmapWithBorder.compress(Bitmap.CompressFormat.PNG, 90, out);
+                    bitmapWithBorder.compress(Bitmap.CompressFormat.PNG, 100, out);
 
+                    // TODO: not really required to write the file to disk...maybe interesting for
+                    // image caching...
                     rideHolder.setMapImage(snapshotFile.getAbsolutePath());
+                    rideHolder.setMapImageBitmap(bitmapWithBorder);
+
+                    // TODO: remove: visual checkpoint...
                     ivTemp.setImageBitmap(bitmapWithBorder);
                 }
                 catch (Exception e)
@@ -1052,6 +1041,12 @@ public class RidingActivity extends CommonCameraActivity
         public void handleRequestResult(List result)
         {
             progressBar.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void handleGenericRequestResult(GenericRequestCode code, Object result)
+        {
+
         }
 
         @Override

@@ -12,13 +12,6 @@
         android:background="@drawable/bg_headerbar"
         android:padding="10dp"
         >
-        <com.facebook.widget.ProfilePictureView
-            android:id="@+id/fb_image"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:visibility="invisible"
-            >
-        </com.facebook.widget.ProfilePictureView>
         <com.makeramen.RoundedImageView
             android:layout_toRightOf="@+id/fb_image"
             xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -48,6 +41,7 @@
         </LinearLayout>
     </RelativeLayout>
     <RelativeLayout
+        android:id="@+id/rl_rideNow"
         android:background="@drawable/green_selector"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -79,6 +73,26 @@
             style="@style/sidebar_item"
             android:text="@string/item_my_rides"
             android:layout_toRightOf="@+id/iv_map"
+            android:layout_centerVertical="true"
+            android:paddingLeft="10dp"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:background="@drawable/grey_selector"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:clickable="true">
+        <ImageView
+            android:id="@+id/iv_total"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_map"/>
+        <TextView
+            android:id="@+id/tv_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/sidebar_item"
+            android:layout_toRightOf="@+id/iv_total"
             android:layout_centerVertical="true"
             android:paddingLeft="10dp"/>
     </RelativeLayout>

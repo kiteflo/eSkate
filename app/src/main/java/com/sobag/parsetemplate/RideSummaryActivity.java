@@ -69,7 +69,7 @@ public class RideSummaryActivity extends CommonActivity
         String waypoints = intent.getStringExtra("waypoints");
 
         Double distance = intent.getDoubleExtra("distance",0);
-        tvDistance.setText(String.format("%.2f", distance));
+        tvDistance.setText(String.format("%.2f", distance/1000));
         Double avgSpeed = intent.getDoubleExtra("avgSpeed",0);
         tvAvgSpeed.setText(String.format("%.2f", avgSpeed));
         String duration = intent.getStringExtra("duration");

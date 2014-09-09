@@ -24,6 +24,7 @@ import com.sobag.parsetemplate.domain.RideHolder;
 import com.sobag.parsetemplate.domain.RideImage;
 import com.sobag.parsetemplate.domain.User;
 import com.sobag.parsetemplate.domain.Waypoint;
+import com.sobag.parsetemplate.enums.GenericRequestCode;
 import com.sobag.parsetemplate.util.BitmapUtility;
 
 import org.json.JSONArray;
@@ -124,7 +125,7 @@ public class ParseRequestService
         ride.setRideDate(new Date());
 
         // apply map image...
-        Bitmap mapImg = BitmapFactory.decodeFile(rideHolder.getMapImage());
+        Bitmap mapImg = rideHolder.getMapImageBitmap();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         mapImg.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] data = stream.toByteArray();

@@ -351,6 +351,7 @@
                         android:background="@drawable/toggle_selector"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
+                        android:checked="true"
                         />
                 </RelativeLayout>
 
@@ -391,6 +392,7 @@
                         android:background="@drawable/toggle_selector"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
+                        android:checked="true"
                         />
                 </RelativeLayout>
 

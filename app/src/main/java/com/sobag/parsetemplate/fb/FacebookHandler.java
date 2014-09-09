@@ -53,7 +53,7 @@ public class FacebookHandler
         // to do this.
         if (UPLOAD_IMAGE) {
             // Set up image upload request parameters
-            Bitmap image = BitmapFactory.decodeFile(rideHolder.getMapImage());
+            Bitmap image = rideHolder.getMapImageBitmap();
 
             // Set up the image upload request callback
             Request.Callback imageCallback = new Request.Callback() {

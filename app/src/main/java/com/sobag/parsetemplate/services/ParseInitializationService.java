@@ -10,6 +10,7 @@ import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.model.GraphUser;
+import com.facebook.widget.ProfilePictureView;
 import com.google.inject.Inject;
 import com.parse.FindCallback;
 import com.parse.Parse;
@@ -118,7 +119,7 @@ public class ParseInitializationService
     }
 
     // init client user
-    public void initClientUser()
+    public void initClientUser(ProfilePictureView fbImageView)
     {
         if (clientUser == null)
         {
@@ -129,7 +130,7 @@ public class ParseInitializationService
         Session session = ParseFacebookUtils.getSession();
         if (session != null && session.isOpened())
         {
-            makeMeRequest();
+            makeMeRequest(fbImageView);
         }
         else
         {
@@ -170,7 +171,7 @@ public class ParseInitializationService
     // private usage
     // ------------------------------------------------------------------------
 
-    private void makeMeRequest() {
+    private void makeMeRequest(final ProfilePictureView fbImageView) {
         Request request = Request.newMeRequest(ParseFacebookUtils.getSession(),
                 new Request.GraphUserCallback() {
                     @Override
@@ -180,9 +181,8 @@ public class ParseInitializationService
                             clientUser.setFirstname(user.getFirstName());
                             clientUser.setLastname((user.getLastName()));
                             clientUser.setFacebookID(user.getId());
-                            //new DownloadImagesTask("https://graph.facebook.com/" + user.getId() + "/picture?type=large").execute(clientUser);
-                            //new DownloadImagesTask("http://www.asklubo.com/uploads/attachments/published/2/9708/de/fische-richtig-putzen.jpg");
 
+                            fbImageView.setProfileId(user.getId());
                         }
                     }
                 });

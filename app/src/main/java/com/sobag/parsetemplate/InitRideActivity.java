@@ -15,6 +15,7 @@ import com.makeramen.RoundedImageView;
 import com.sobag.parsetemplate.domain.Board;
 import com.sobag.parsetemplate.domain.RideHolder;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
+import com.sobag.parsetemplate.enums.GenericRequestCode;
 import com.sobag.parsetemplate.lists.BoardListAdapter;
 import com.sobag.parsetemplate.services.ParseRequestService;
 import com.sobag.parsetemplate.services.RequestListener;
@@ -143,6 +144,12 @@ public class InitRideActivity extends CommonActivity
                 rideHolder.setBoard(board);
             }
         });
+    }
+
+    @Override
+    public void handleGenericRequestResult(GenericRequestCode code, Object result)
+    {
+
     }
 
     @Override

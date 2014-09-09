@@ -1,5 +1,7 @@
 package com.sobag.parsetemplate.services;
 
+import com.sobag.parsetemplate.enums.GenericRequestCode;
+
 import java.util.List;
 
 /**
@@ -17,6 +19,13 @@ public interface RequestListener
      * @param result
      */
     public void handleRequestResult(List result);
+
+    /**
+     * Generic response handler...
+     * @param code
+     * @param result
+     */
+    public void handleGenericRequestResult(GenericRequestCode code,Object result);
 
     /**
      * Handle any exception which might occur during parse operation...

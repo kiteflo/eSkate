@@ -18,6 +18,7 @@ public class ClientUser
     private String firstname;
     private String lastname;
     private Bitmap userImage;
+    private double totalDistanceInMeters;
 
     // ------------------------------------------------------------------------
     // GETTER & SETTER
@@ -61,5 +62,15 @@ public class ClientUser
     public void setFacebookID(String facebookID)
     {
         this.facebookID = facebookID;
+    }
+
+    public double getTotalDistanceInMeters()
+    {
+        return totalDistanceInMeters;
+    }
+
+    public void setTotalDistanceInMeters(double totalDistanceInMeters)
+    {
+        this.totalDistanceInMeters = totalDistanceInMeters;
     }
 }

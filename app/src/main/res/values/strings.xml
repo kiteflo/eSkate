@@ -11,6 +11,7 @@
     <!-- sidebar -->
     <string name="item_ride_now">RIDE NOW!</string>
     <string name="item_my_rides">my tracks</string>
+    <string name="item_total">total (%1$s)</string>
     <string name="item_my_achievements">achievements</string>
     <string name="item_logout">logout</string>
 

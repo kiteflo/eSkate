@@ -84,9 +84,6 @@ public class SplashActivity extends RoboActivity
             }
             else
             {
-                // init client user...fetch image etc...
-                parseInitializationService.initClientUser();
-
                 // display main screen...
                 Intent loginIntent = new Intent(this, RidesActivity.class);
                 startActivity(loginIntent);

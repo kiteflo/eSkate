@@ -30,9 +30,11 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.sobag.parsetemplate.domain.ClientUser;
 import com.sobag.parsetemplate.domain.Ride;
 import com.sobag.parsetemplate.domain.RideImage;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
+import com.sobag.parsetemplate.enums.GenericRequestCode;
 import com.sobag.parsetemplate.fb.FacebookHandler;
 import com.sobag.parsetemplate.lists.BoardListAdapter;
 import com.sobag.parsetemplate.lists.NavigationListAdapter;
@@ -97,7 +99,7 @@ public class RidesActivity extends CommonActivity
         Intent initRideActivity = new Intent(this,InitRideActivity.class);
         startActivity(initRideActivity);
 
-        fontUtility.applyFontToComponent(tvLabel,R.string.default_font,
+        fontUtility.applyFontToComponent(tvLabel, R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
     }
 
@@ -120,6 +122,14 @@ public class RidesActivity extends CommonActivity
 
         RideListAdapter rla = new RideListAdapter(getApplicationContext(),
                 rides, fontUtility);
+
+        // apply common user attributes...
+        double totalDistanceInMeters = 0;
+        for (Ride ride : rides)
+        {
+            totalDistanceInMeters = totalDistanceInMeters + ride.getDistance();
+        }
+        super.clientUser.setTotalDistanceInMeters(totalDistanceInMeters);
 
         // fetch UI container and mixin contents...
         ListView lvRides = (ListView)findViewById(R.id.lv_rides);
@@ -145,6 +155,18 @@ public class RidesActivity extends CommonActivity
                 startActivity(rideSummaryActivity);
             }
         });
+    }
+
+    @Override
+    public void handleGenericRequestResult(GenericRequestCode code, Object result)
+    {
+        switch (code)
+        {
+            case TOTAL_KILOMETER_RESPONSE:
+            {
+                break;
+            }
+        }
     }
 
     @Override
