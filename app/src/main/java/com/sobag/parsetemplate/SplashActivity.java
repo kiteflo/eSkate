@@ -10,8 +10,6 @@ import com.google.inject.Inject;
 import com.sobag.parsetemplate.services.InitializationListener;
 import com.sobag.parsetemplate.services.ParseInitializationService;
 
-import javax.annotation.Nullable;
-
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContextSingleton;
 import roboguice.inject.InjectView;
@@ -29,8 +27,8 @@ public class SplashActivity extends RoboActivity
     @Inject
     ParseInitializationService parseInitializationService;
 
-    @Nullable
-    @InjectView(tag = "progressBar") ProgressBar progressBar;
+    @InjectView(tag = "progressBar")
+    ProgressBar progressBar = null;
 
     // ------------------------------------------------------------------------
     // public usage
@@ -40,8 +38,10 @@ public class SplashActivity extends RoboActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Crashlytics.start(this);
         setContentView(R.layout.activity_splash);
+
+        // crashlytics?
+        // Crashlytics.start(this);
 
         // init parse...
         parseInitializationService.init();

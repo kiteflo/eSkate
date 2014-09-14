@@ -72,8 +72,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.Nullable;
-
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 
@@ -91,7 +89,6 @@ public class RidingActivity extends CommonCameraActivity
     @Inject
     ParseRequestService parseRequestService;
 
-    @Nullable
     @InjectView(tag = "progressBar")
     ProgressBar progressBar;
 
@@ -174,6 +171,7 @@ public class RidingActivity extends CommonCameraActivity
     public static double DISTANCE_MAX_FILTER_NETWORK = 30;
     private Location previousLocation = null;
     private int currentAccuracy;
+    private int currentCameraZoom = 17;
 
     // ride
     @Inject
@@ -385,7 +383,15 @@ public class RidingActivity extends CommonCameraActivity
     {
         Ln.d("Validated successfully!");
 
-        finishRide();
+        // create map snapshot...finish ride is triggered via callback...
+        try
+        {
+            captureMapScreen();
+        }
+        catch (Exception e)
+        {
+            Ln.e(e);
+        }
     }
 
     public void onValidationFailed(View failedView, Rule<?> failedRule)
@@ -512,16 +518,6 @@ public class RidingActivity extends CommonCameraActivity
             tvFinish.setText(getString(R.string.but_save));
 
             save = true;
-
-            // create map snapshot...finish ride is triggered via callback...
-            try
-            {
-                captureMapScreen();
-            }
-            catch (Exception e)
-            {
-                Ln.e(e);
-            }
         }
 
         // save ride...
@@ -673,8 +669,11 @@ public class RidingActivity extends CommonCameraActivity
                         .width(10)
                         .color(Color.BLUE));
 
+                // update camera zoom
+                applyCameraZoom();
+
                 // move camera...
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, currentCameraZoom));
 
                 // apply ride settings
                 updateRidingResults(location);
@@ -772,9 +771,10 @@ public class RidingActivity extends CommonCameraActivity
         }
 
         // set avg speed...
-        // s=v*t <=> v=s/t
-        // double avgSpeed = (rideHolder.getDistance()/1000)/timerUtility.getSeconds();
-        double avgSpeed = (rideHolder.getDistance())/timerUtility.getSeconds();
+        // s=v*t <=> v=s/t (m/s)
+        double avgSpeed = rideHolder.getDistance()/timerUtility.getSeconds();
+        // m/s => km/h
+        avgSpeed = avgSpeed/1000*3600;
         rideHolder.setAvgSpeed(avgSpeed);
 
         // calculate distance...
@@ -798,7 +798,7 @@ public class RidingActivity extends CommonCameraActivity
         marker = map.addMarker(new MarkerOptions().position(position).title("YOU"));
 
         // move camera...
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, currentCameraZoom));
 
         // update marker
         if (rideHolder.getWaypoints().size() > 0)
@@ -830,6 +830,45 @@ public class RidingActivity extends CommonCameraActivity
             {
                 rideHolder.setAddress(null);
             }
+        }
+    }
+
+    /**
+     * Set current camera zoom based on current ride distance...
+     */
+    private void applyCameraZoom()
+    {
+        if (rideHolder.getDistance() >= 300)
+        {
+            currentCameraZoom = 16;
+        }
+        else if (rideHolder.getDistance() >= 500)
+        {
+            currentCameraZoom = 15;
+        }
+        else if (rideHolder.getDistance() >= 1000)
+        {
+            currentCameraZoom = 14;
+        }
+        else if (rideHolder.getDistance() >= 2000)
+        {
+            currentCameraZoom = 13;
+        }
+        else if (rideHolder.getDistance() >= 4000)
+        {
+            currentCameraZoom = 12;
+        }
+        else if (rideHolder.getDistance() >= 8000)
+        {
+            currentCameraZoom = 11;
+        }
+        else if (rideHolder.getDistance() >= 30000)
+        {
+            currentCameraZoom = 11;
+        }
+        else
+        {
+            currentCameraZoom = 17;
         }
     }
 
@@ -1000,6 +1039,54 @@ public class RidingActivity extends CommonCameraActivity
                     ex.printStackTrace();
                 }
 
+                // apply banner
+                if (rideHolder.getAddress() != null)
+                {
+                    String city = rideHolder.getAddress().getLocality();
+                    String country = rideHolder.getAddress().getCountryName();
+                    String text = city + " (" +country +")";
+
+                    int yPos = padding;
+                    int xPos = 2 * padding;
+                    int bannerWidth = imageWidth - 4 * padding;
+                    int bannerHeight = footerHeight+footerHeight*1/5;
+                    Bitmap banner = BitmapFactory.decodeResource(getResources(), R.drawable.banner_blue);
+                    banner = Bitmap.createScaledBitmap(banner, bannerWidth, bannerHeight, false);
+                    Paint paint = new Paint();
+                    paint.setAntiAlias(true);
+                    canvas.drawBitmap(banner, xPos, yPos, paint);
+                    // apply text to banner...
+                    Paint titleLabel = new Paint(Paint.ANTI_ALIAS_FLAG);
+                    // text color - #3D3D3D
+                    titleLabel.setColor(Color.WHITE);
+                    // text size in pixels
+                    titleLabel.setTextSize(largeTextHeight);
+                    Rect bounds = new Rect();
+                    titleLabel.getTextBounds(text, 0, text.length(), bounds);
+
+                    // subtitle
+                    String subtitle = etRideTitle.getText().toString();
+                    // apply text to banner...
+                    Paint subtitleLabel = new Paint(Paint.ANTI_ALIAS_FLAG);
+                    // text color - #3D3D3D
+                    subtitleLabel.setColor(Color.WHITE);
+                    // text size in pixels
+                    subtitleLabel.setTextSize(smallTextHeight);
+                    Rect subbounds = new Rect();
+                    subtitleLabel.getTextBounds(subtitle, 0, subtitle.length(), subbounds);
+
+                    // Draw title
+                    x = xPos + new Float((bannerWidth - bounds.width()) / 2).intValue();
+                    y = yPos + new Float((bannerHeight - bounds.height() - subbounds.height() - padding/2) / 2).intValue() +bounds.height();
+                    canvas.drawText(text, x, y, titleLabel);
+
+                    x = xPos + new Float((bannerWidth - subbounds.width()) / 2).intValue();
+                    y = y + subbounds.height() +padding/2;
+                    canvas.drawText(subtitle, x, y, subtitleLabel);
+
+
+                }
+
                 try
                 {
                     FileOutputStream out = new FileOutputStream(snapshotFile);
@@ -1012,6 +1099,8 @@ public class RidingActivity extends CommonCameraActivity
 
                     // TODO: remove: visual checkpoint...
                     ivTemp.setImageBitmap(bitmapWithBorder);
+
+                    finishRide();
                 }
                 catch (Exception e)
                 {

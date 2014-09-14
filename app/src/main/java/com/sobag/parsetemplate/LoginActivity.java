@@ -12,13 +12,12 @@ import com.google.inject.Inject;
 import com.mobsandgeeks.saripaar.Rule;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Required;
+import com.parse.ParseFacebookUtils;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
 import com.sobag.parsetemplate.services.LoginListener;
 import com.sobag.parsetemplate.services.ParseLoginService;
 import com.sobag.parsetemplate.util.FontUtility;
 import com.sobag.parsetemplate.util.ResourceUtility;
-
-import javax.annotation.Nullable;
 
 import roboguice.inject.ContextSingleton;
 import roboguice.inject.InjectView;
@@ -42,7 +41,6 @@ public class LoginActivity extends CommonHeadlessActivity
 
     // UI components...
 
-    @Nullable
     @InjectView(tag = "progressBar")
     ProgressBar progressBar;
 
@@ -109,6 +107,12 @@ public class LoginActivity extends CommonHeadlessActivity
         validator.validate();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
+    }
     // ------------------------------------------------------------------------
     // validation implementation
     // ------------------------------------------------------------------------

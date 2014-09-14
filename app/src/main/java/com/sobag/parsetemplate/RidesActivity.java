@@ -51,8 +51,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 
@@ -63,7 +61,6 @@ public class RidesActivity extends CommonActivity
     // members
     // ------------------------------------------------------------------------
 
-    @Nullable
     @InjectView(tag = "progressBar")
     ProgressBar progressBar;
 

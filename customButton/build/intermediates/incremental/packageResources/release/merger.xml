@@ -4,6 +4,11 @@
     <dataSet config="main" >
         <source path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/main/res" >
             <file
+                name="but_selector"
+                path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/main/res/drawable/but_selector.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
                 name="world"
                 path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/main/res/drawable/world.png"
                 qualifiers=""
@@ -62,11 +67,6 @@
                     </item>
                 </style>
             </file>
-            <file
-                name="but_selector"
-                path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/src/main/res/drawable/but_selector.xml"
-                qualifiers=""
-                type="drawable" />
         </source>
         <source path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/build/generated/res/rs/release" />
         <source path="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/customButton/build/generated/res/generated/release" />

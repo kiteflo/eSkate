@@ -31,8 +31,6 @@ import com.sobag.parsetemplate.util.ResourceUtility;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import roboguice.inject.ContextSingleton;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
@@ -54,7 +52,6 @@ public class SignupActivity extends CommonHeadlessActivity
 
     // UI components...
 
-    @Nullable
     @InjectView(tag = "progressBar") ProgressBar progressBar;
 
     @InjectView(tag = "tv_title") TextView tvTitle;

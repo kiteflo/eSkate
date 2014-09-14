@@ -73,6 +73,8 @@ public class CommonActivity extends RoboActivity
 
     // buttons
     private RelativeLayout rlRideNow;
+    private RelativeLayout rlTotalDistance;
+    private RelativeLayout rlMyTracks;
 
     // ------------------------------------------------------------------------
     // common stuff...
@@ -97,6 +99,10 @@ public class CommonActivity extends RoboActivity
         // action areas
         rlRideNow = (RelativeLayout)view.findViewById(R.id.rl_rideNow);
         rlRideNow.setOnClickListener(new RideNowAdapter());
+        rlTotalDistance = (RelativeLayout)view.findViewById(R.id.rl_totalDistance);
+        rlTotalDistance.setOnClickListener(new TotalKilometersAdapter());
+        rlMyTracks = (RelativeLayout)view.findViewById(R.id.rl_myTracks);
+        rlMyTracks.setOnClickListener(new MyTracksAdapter());
 
         // apply fonts
         fontUtility.applyFontToComponent(tvUser,R.string.default_font,
@@ -130,7 +136,7 @@ public class CommonActivity extends RoboActivity
                 {
                     tvUser.setText(clientUser.getFirstname() + " " +clientUser.getLastname());
                     ivUser.setImageBitmap(clientUser.getUserImage());
-                    tvTotal.setText(getString(R.string.item_total,String.format("%.2f", clientUser.getTotalDistanceInMeters() / 1000)));
+                    tvTotal.setText(getString(R.string.item_total,String.format("%.2f", clientUser.getTotalDistanceInMeters() / 1000)+" km"));
                 }
 
                 // apply rounded image
@@ -153,6 +159,7 @@ public class CommonActivity extends RoboActivity
         TextView yourTextView = (TextView)aactionBarView.findViewById(R.id.ab_title);
         yourTextView.setTextColor(getResources().getColor(R.color.white));
         fbImage = (ProfilePictureView)aactionBarView.findViewById(R.id.fb_image);
+
         // fetch facebook user...
         // init client user...fetch image etc...
         parseInitService.initClientUser(fbImage);
@@ -209,6 +216,31 @@ public class CommonActivity extends RoboActivity
 
             Intent initRideActivity = new Intent(selfReference,InitRideActivity.class);
             startActivity(initRideActivity);
+        }
+    }
+
+    private class TotalKilometersAdapter implements View.OnClickListener
+    {
+        @Override
+        public void onClick(View v)
+        {
+            menu.toggle(true);
+
+            Intent showKilometersIntent = new Intent(selfReference,TotalDistanceActivity.class);
+            showKilometersIntent.putExtra("distance",String.format("%.2f", clientUser.getTotalDistanceInMeters() / 1000));
+            startActivity(showKilometersIntent);
+        }
+    }
+
+    private class MyTracksAdapter implements View.OnClickListener
+    {
+        @Override
+        public void onClick(View v)
+        {
+            menu.toggle(true);
+
+            Intent showTrackIntent = new Intent(selfReference,RidesActivity.class);
+            startActivity(showTrackIntent);
         }
     }
 

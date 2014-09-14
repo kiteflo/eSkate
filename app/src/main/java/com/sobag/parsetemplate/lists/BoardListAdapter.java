@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.makeramen.RoundedImageView;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
@@ -67,18 +68,12 @@ public class BoardListAdapter extends ArrayAdapter<Board>
 
         // setup image...
         final RoundedImageView ivImage = (RoundedImageView)rowView.findViewById(R.id.iv_image);
-        board.getImage().getDataInBackground(new GetDataCallback()
-        {
-            @Override
-            public void done(byte[] bytes, ParseException e)
-            {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length,options);
-                ivImage.setImageBitmap(bitmap);
-                ivImage.setImageAlpha(120);
 
-                board.resetImage();
-            }
-        });
+        String url = board.getImage().getUrl();
+        Glide.with(context).load(url).into(ivImage);
+
+        // wanna have some memory issues? then drop the following line..
+        // board.resetImage();
 
         return rowView;
     }

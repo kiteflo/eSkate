@@ -23,8 +23,6 @@ import com.sobag.parsetemplate.util.FontUtility;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 
@@ -35,7 +33,6 @@ public class InitRideActivity extends CommonActivity
     // members
     // ------------------------------------------------------------------------
 
-    @Nullable
     @InjectView(tag = "progressBar")
     ProgressBar progressBar;
 

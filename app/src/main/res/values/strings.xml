@@ -96,5 +96,6 @@
 
     <!-- ride summary -->
     <string name="title_activity_bluetooth">BluetoothActivity</string>
+    <string name="title_activity_total_distance">TotalDistanceActivity</string>
 
 </resources>
