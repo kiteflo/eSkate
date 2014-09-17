@@ -1,4 +1,4 @@
 eSkate
 ======
 
-eSkate activity tracking app...
+eSkate project

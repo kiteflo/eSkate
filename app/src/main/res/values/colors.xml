@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <color name="light_black">#3c3533</color>
+    <color name="default_background">#121314</color>
+    <color name="edittext_background">#1c1c1f</color>
+    <color name="line_divider">#2e2f33</color>
+    <color name="white">#ffffff</color>
+    <color name="hint_grey">#adaeb3</color>
+    <color name="grey">#e8e2e6</color>
+    <color name="facebookBlue">#3a5897</color>
+    <color name="facebookBlueHighlighted">#5887b4</color>
+    <color name="poisonGreen">#648f00</color>
+    <color name="poisonGreenHighlighted">#94d600</color>
+    <color name="salmonBlue">#46a7d6</color>
+</resources>

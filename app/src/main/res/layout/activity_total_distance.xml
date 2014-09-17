@@ -1,0 +1,42 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_background"
+    tools:context="com.sobag.parsetemplate.TotalDistanceActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="bottom">
+        <TextView
+            android:tag="tv_total_kilometers"
+            android:id="@+id/tv_total_kilometers"
+            android:text="23.45"
+            android:textSize="100dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:textColor="#FFFFFF"/>
+        <TextView
+            android:tag="tv_total_kilometers_label"
+            android:id="@+id/tv_total_kilometers_label"
+            android:text="km"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30dp"
+            android:paddingLeft="10dp"
+            android:textColor="#FFFFFF"
+            />
+    </LinearLayout>
+
+    <ProgressBar
+        android:tag="progressBar"
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"/>
+</RelativeLayout>

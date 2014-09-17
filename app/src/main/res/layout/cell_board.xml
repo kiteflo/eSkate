@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="10dp"
+    >
+    <com.makeramen.RoundedImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/iv_image"
+        android:scaleType="centerCrop"
+        app:corner_radius="30dp"
+        app:border_width="1dp"
+        app:border_color="@color/hint_grey"
+        android:layout_gravity="center_vertical"
+        />
+    <TextView
+        style="@style/list_title"
+        android:layout_toRightOf="@+id/iv_image"
+        android:id="@+id/tv_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:padding="10dp"
+        android:alpha="0.5"
+        />
+</RelativeLayout>

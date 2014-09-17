@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ParseTemplate</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_logout">Logout</string>
+
+    <!-- splash screen -->
+    <string name="title_activity_splash">SplashActivity</string>
+
+    <!-- sidebar -->
+    <string name="item_ride_now">RIDE NOW!</string>
+    <string name="item_my_rides">my tracks</string>
+    <string name="item_total">total (%1$s)</string>
+    <string name="item_my_achievements">achievements</string>
+    <string name="item_logout">logout</string>
+
+    <!-- launch page -->
+    <string name="but_login">LOGIN</string>
+    <string name="but_login_loading">LOGGING IN...</string>
+    <string name="but_register">REGISTER</string>
+    <string name="but_register_loading">REGISTERING...</string>
+
+    <!-- drawer -->
+    <string name="drawer_open">open</string>
+    <string name="drawer_close">close</string>
+
+    <!-- signup page -->
+    <string name="title_activity_signup">SignupActivity</string>
+    <string name="but_fbSignup">Facebook Signup</string>
+    <string name="fb_signup_button_text">Signup using Facebook</string>
+    <string name="email_signup_title">create eSkate account</string>
+    <string name="hint_username">desired username</string>
+    <string name="hint_email">em@il address</string>
+    <string name="hint_pw">password</string>
+    <string name="hint_pw_repeat">repeat password</string>
+    <string name="msg_requiredField">input required...</string>
+    <string name="msg_emailFormat">not a valid e-mail address...</string>
+    <string name="msg_weakPassword">requires at least 6 characters...</string>
+    <string name="msg_passwordMismatch">password mismatch...</string>
+
+    <!-- login page -->
+    <string name="login_title">LOGIN</string>
+    <string name="fb_login_button_text">Login using Facebook</string>
+    <string name="text_or">or</string>
+    <string name="hint_username_short">username</string>
+    <string name="hint_password">password</string>
+    <string name="msg_loginfailed">Invalid username or password....</string>
+
+    <!-- error page -->
+    <string name="title_activity_error">ErrorActivity</string>
+    <string name="error_text">Server outage...sorry!</string>
+
+    <!-- FB login -->
+    <string name="title_facebook_login">Facebook Login</string>
+    <string name="title_activity_signup_email">SignupEmailActivity</string>
+    <string name="title_activity_launch">LaunchActivity</string>
+    <string name="hello_world">Hello world!</string>
+
+    <!-- ride overview page -->
+    <string name="title_activity_rides">rides</string>
+    <string name="but_new_ride">start new ride</string>
+    <string name="title_rides">YOUR RIDES</string>
+
+    <!-- ride init page -->
+    <string name="title_activity_init_ride">Prepare ride...</string>
+    <string name="activity_init_ride_board">SELECT YOUR WEAPON</string>
+    <string name="but_next">next...</string>
+
+    <!-- location page -->
+    <string name="title_activity_location">Prepare ride...</string>
+    <string name="subtitle_location">YOUR LOCATION</string>
+    <string name="but_start">start ride!</string>
+    <string name="msg_location_not_available">Cant determine your geo position :(</string>
+    <string name="subtitle_image">STARTPOINT IMAGE(S)</string>
+
+    <!-- riding activity -->
+    <string name="title_activity_riding">eSkating in action...</string>
+    <string name="header_track">YOUR TRACK</string>
+    <string name="header_GPS">gps</string>
+    <string name="header_NETWORK">network</string>
+    <string name="header_publish">PUBLISH</string>
+    <string name="but_pause">pause</string>
+    <string name="but_finish">finish</string>
+    <string name="but_resume">resume</string>
+    <string name="but_save">save \u0026 finish</string>
+    <string name="lab_rideHolder">\u0027a glorious ride in the park...!\u0027</string>
+    <string name="header_description">DESCRIBE YOUR RIDE</string>
+    <string name="lab_share_eskate">publish ride on eSkate</string>
+    <string name="lab_share_fb">publish ride on facebook</string>
+
+    <!-- toast messages -->
+    <string name="msg_paused">your eSkate activity is paused now...</string>
+    <string name="msg_select_board">you have to select your weapon...</string>
+    <string name="title_activity_ride_summary">RideSummaryActivity</string>
+
+    <!-- ride summary -->
+    <string name="title_activity_bluetooth">BluetoothActivity</string>
+    <string name="title_activity_total_distance">TotalDistanceActivity</string>
+
+</resources>

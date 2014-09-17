@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="applicationID">NWjZzsWYjGCDRyMwHtBWpHwruyWLWouVzBSGr33c</string>
+    <string name="clientKey">miND7JCJURh093ZcFWoiJtbNb2FJ3smkkiVagJ0x</string>
+    <string name="fbAppID">1493009654269053</string>
+    <string name="preferencesFile">prefsFileName</string>
+</resources>

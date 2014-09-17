@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="second_font">fonts/Aaargh.ttf</string>
+    <string name="default_font">fonts/Corbel.ttf</string>
+    <string name="special_font">fonts/haettenschweiler.ttf</string>
+</resources>
