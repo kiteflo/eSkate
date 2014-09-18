@@ -3,23 +3,40 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="fill_parent"
               android:layout_height="wrap_content"
+              android:background="@drawable/bg_headerbar"
     >
+    <!-- invisible facebook user image...hack for profile image -->
+    <com.facebook.widget.ProfilePictureView
+        android:id="@+id/fb_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:visibility="invisible"
+        />
     <ImageView
         android:id="@+id/ab_icon"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@drawable/ic_eskate"
-        android:layout_margin="5dp"/>
-
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:src="@drawable/indicator"
+        android:layout_alignParentLeft="true"
+        />
+    <View
+        android:id="@+id/view_clickarea"
+        android:layout_width="60dp"
+        android:layout_height="fill_parent"
+        android:clickable="true"
+        />
     <TextView
-        android:layout_toRightOf="@+id/ab_icon"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:gravity="center"
         android:id="@+id/ab_title"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        style="@style/tv_actionbar_title"
         android:text="skating like a boss"
-        android:layout_centerVertical="true"/>
-
+        />
     <ImageView
+        android:visibility="gone"
         android:id="@+id/iv_photoButton"
         android:layout_width="30dp"
         android:layout_height="30dp"

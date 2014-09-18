@@ -73,6 +73,7 @@ public class CommonActivity extends RoboActivity
     private TextView tvAchievements;
     private ImageView ivUser;
     private ProfilePictureView fbImage;
+    private ImageView ivPhotoButton;
 
     // buttons
     private RelativeLayout rlRideNow;
@@ -99,6 +100,7 @@ public class CommonActivity extends RoboActivity
         tvTotal = (TextView)view.findViewById(R.id.tv_total);
         tvMyRides = (TextView)view.findViewById(R.id.tv_myrides);
         ivUser = (RoundedImageView)view.findViewById(R.id.iv_image);
+
         // action areas
         rlRideNow = (RelativeLayout)view.findViewById(R.id.rl_rideNow);
         rlRideNow.setOnClickListener(new RideNowAdapter());
@@ -150,13 +152,14 @@ public class CommonActivity extends RoboActivity
         });
 
         // action bar
-        View aactionBarView = getLayoutInflater().inflate(R.layout.actionbar_plain, null);
+        View aactionBarView = getLayoutInflater().inflate(R.layout.actionbar_camera, null);
         final ActionBar actionBar = getActionBar();
         actionBar.setCustomView(aactionBarView);
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setDisplayUseLogoEnabled(false);
         actionBar.setDisplayShowHomeEnabled(false);
+        ivPhotoButton = (ImageView)aactionBarView.findViewById(R.id.iv_photoButton);
 
         // actionbar listeners...need to be set explicitly...
         tvActionBar = (TextView)aactionBarView.findViewById(R.id.ab_title);
@@ -274,5 +277,15 @@ public class CommonActivity extends RoboActivity
     public void setTvActionBar(TextView tvActionBar)
     {
         this.tvActionBar = tvActionBar;
+    }
+
+    public ImageView getIvPhotoButton()
+    {
+        return ivPhotoButton;
+    }
+
+    public void setIvPhotoButton(ImageView ivPhotoButton)
+    {
+        this.ivPhotoButton = ivPhotoButton;
     }
 }

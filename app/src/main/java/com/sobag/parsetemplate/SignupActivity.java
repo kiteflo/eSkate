@@ -148,25 +148,13 @@ public class SignupActivity extends CommonHeadlessActivity
         parseSignupService.signupViaEmail(username,password,email,this);
     }
 
-    public void onValidationFailed(View failedView, Rule<?> failedRule)
-    {
+    public void onValidationFailed(View failedView, Rule<?> failedRule) {
         Ln.d("Validation failed!");
-
-        // little hack - within a module we can not specify a message ID directly
-        // within the annotation...so we define a string constant in the annotation
-        // which finally here will be translated...
         String messageID = failedRule.getFailureMessage();
         String translatedMessage = getString(ResourceUtility.getId(messageID, R.string.class));
 
-        if (failedView instanceof EditText)
-        {
-            failedView.requestFocus();
-            ((EditText) failedView).setError(translatedMessage);
-        }
-        else
-        {
-            Toast.makeText(this, translatedMessage, Toast.LENGTH_SHORT).show();
-        }
+        failedView.requestFocus();
+        ((EditText) failedView).setError(translatedMessage);
     }
 
     // ------------------------------------------------------------------------

@@ -75,7 +75,7 @@ import java.util.Locale;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 
-public class RidingActivity extends CommonCameraActivity
+public class RidingActivity extends CommonActivity
         implements LocationListener, Validator.ValidationListener
 {
     // ------------------------------------------------------------------------
@@ -95,23 +95,23 @@ public class RidingActivity extends CommonCameraActivity
     @Inject
     FontUtility fontUtility;
 
-    @InjectView(tag = "tv_location")
+    @InjectView(R.id.tv_location)
     TextView tvLocation;
-    @InjectView(tag = "tv_finish")
+    @InjectView(R.id.tv_finish)
     TextView tvFinish;
-    @InjectView(tag = "tv_pause")
+    @InjectView(R.id.tv_pause)
     TextView tvPause;
-    @InjectView(tag = "but_pause")
+    @InjectView(R.id.but_pause)
     RelativeLayout butPause;
-    @InjectView(tag = "view_divider_footer")
+    @InjectView(R.id.view_divider_footer)
     View viewDividerFooter;
-    @InjectView(tag = "toggle_facebook")
+    @InjectView(R.id.toggle_facebook)
     ToggleButton toggleFacebook;
-    @InjectView(tag = "toggle_eskate")
+    @InjectView(R.id.toggle_eskate)
     ToggleButton toggleEskate;
-    @InjectView(tag = "tv_provider")
+    @InjectView(R.id.tv_provider)
     TextView tvProvider;
-    @InjectView(tag = "iv_temp")
+    @InjectView(R.id.iv_temp)
     ImageView ivTemp;
 
     @InjectView(tag = "tv_distance")
@@ -209,6 +209,9 @@ public class RidingActivity extends CommonCameraActivity
         setContentView(R.layout.activity_riding);
         selfReference = this;
 
+        // enable photo button in header bar...
+        super.getIvPhotoButton().setVisibility(View.VISIBLE);
+
         // init validator....
         validator = new Validator(this);
         validator.setValidationListener(this);
@@ -222,8 +225,6 @@ public class RidingActivity extends CommonCameraActivity
                 FontApplicableComponent.TEXT_VIEW);
         fontUtility.applyFontToComponent(tvDescribe,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
-
-
 
         // init map & location manager...
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.frag_map))
