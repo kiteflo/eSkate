@@ -226,10 +226,9 @@ public class RidingActivity extends CommonActivity
         fontUtility.applyFontToComponent(tvDescribe,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
 
-        // init map & location manager...
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.frag_map))
                 .getMap();
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         initMapToCurrentPosition();
 
         custom_button_protected.setOnTouchListener(new View.OnTouchListener()
@@ -797,45 +796,48 @@ public class RidingActivity extends CommonActivity
 
     private void applyMarkerAsStartPoint(LatLng position)
     {
-        if (marker != null)
+        if (map != null)
         {
-            marker.remove();
-        }
-
-        marker = map.addMarker(new MarkerOptions().position(position).title("YOU"));
-
-        // move camera...
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, currentCameraZoom));
-
-        // update marker
-        if (rideHolder.getWaypoints().size() > 0)
-        {
-            rideHolder.getWaypoints().set(0,position);
-        }
-        // add marker
-        else
-        {
-            rideHolder.getWaypoints().add(position);
-        }
-
-        // set start position...
-        rideHolder.setStartPosition(position);
-
-        // set city...as this is so easy in Android! :)
-        // try to get city name...
-        if (rideHolder.getAddress() == null)
-        {
-            try
+            if (marker != null)
             {
-                Geocoder gcd = new Geocoder(this, Locale.getDefault());
-                List<Address> addresses = gcd.getFromLocation(position.latitude, position.longitude, 1);
-                if (addresses.size() > 0)
+                marker.remove();
+            }
+
+            marker = map.addMarker(new MarkerOptions().position(position).title("YOU"));
+
+            // move camera...
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, currentCameraZoom));
+
+            // update marker
+            if (rideHolder.getWaypoints().size() > 0)
+            {
+                rideHolder.getWaypoints().set(0, position);
+            }
+            // add marker
+            else
+            {
+                rideHolder.getWaypoints().add(position);
+            }
+
+            // set start position...
+            rideHolder.setStartPosition(position);
+
+            // set city...as this is so easy in Android! :)
+            // try to get city name...
+            if (rideHolder.getAddress() == null)
+            {
+                try
                 {
-                    rideHolder.setAddress(addresses.get(0));
+                    Geocoder gcd = new Geocoder(this, Locale.getDefault());
+                    List<Address> addresses = gcd.getFromLocation(position.latitude, position.longitude, 1);
+                    if (addresses.size() > 0)
+                    {
+                        rideHolder.setAddress(addresses.get(0));
+                    }
+                } catch (IOException ex)
+                {
+                    rideHolder.setAddress(null);
                 }
-            } catch (IOException ex)
-            {
-                rideHolder.setAddress(null);
             }
         }
     }

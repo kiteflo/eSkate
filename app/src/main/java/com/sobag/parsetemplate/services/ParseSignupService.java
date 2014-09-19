@@ -89,7 +89,9 @@ public class ParseSignupService
      */
     public void loginOrSignupWithFacebook(final SignupListener listener)
     {
-        ParseFacebookUtils.logIn((Activity) listener, new LogInCallback() {
+        List<String> permissions = Arrays.asList("public_profile", "user_friends", "user_about_me",
+                "user_relationships", "user_birthday", "user_location");
+        ParseFacebookUtils.logIn(permissions,(Activity)listener, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException err) {
                 if (user == null) {

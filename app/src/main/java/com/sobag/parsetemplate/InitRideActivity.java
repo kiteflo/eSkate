@@ -124,14 +124,29 @@ public class InitRideActivity extends CommonActivity
                     TextView tvTitlePrevious = (TextView)currentlySelectedItem.findViewById(R.id.tv_title);
                     tvTitlePrevious.setAlpha(0.5f);
                     RoundedImageView ivImagePrevious = (RoundedImageView)currentlySelectedItem.findViewById(R.id.iv_image);
-                    ivImagePrevious.setImageAlpha(120);
+                    if (apiVersion >= Build.VERSION_CODES.JELLY_BEAN)
+                    {
+                        ivImagePrevious.setImageAlpha(120);
+                    }
+                    else
+                    {
+                        ivImagePrevious.setAlpha(120);
+                    }
                     ivImagePrevious.setBorderColor(getResources().getColor(R.color.hint_grey));
                 }
 
                 TextView tvTitle = (TextView)view.findViewById(R.id.tv_title);
                 tvTitle.setAlpha(1.0f);
                 RoundedImageView ivImage = (RoundedImageView)view.findViewById(R.id.iv_image);
-                ivImage.setImageAlpha(255);
+
+                if (apiVersion >= Build.VERSION_CODES.JELLY_BEAN)
+                {
+                    ivImage.setImageAlpha(255);
+                }
+                else
+                {
+                    ivImage.setAlpha(255);
+                }
                 ivImage.setBorderColor(getResources().getColor(R.color.poisonGreen));
 
                 currentlySelectedItem = view;

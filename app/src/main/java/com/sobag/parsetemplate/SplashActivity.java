@@ -51,7 +51,7 @@ public class SplashActivity extends RoboActivity
         setContentView(R.layout.activity_splash);
 
         // crashlytics?
-        // Crashlytics.start(this);
+        Crashlytics.start(this);
 
         // SSL stuff...
         trustEveryone();

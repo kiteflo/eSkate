@@ -2,6 +2,12 @@
 <pre-dex-items>
 
     <item
+        dex="/Users/tzhmufl2/development/repositories/eSkate/app/build/intermediates/pre-dexed/debug/Parse-1.6.0-60742e9e1833d08e1db7634fbe109314bc9241a8.jar"
+        jar="/Users/tzhmufl2/development/repositories/eSkate/app/libs/Parse-1.6.0.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="2a812174191af5a4513a873602a765b0171f252c"/>
+    <item
         dex="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/app/build/intermediates/pre-dexed/debug/Parse-1.5.1-44a5b292490d4521b77fd86b77a208332d23058e.jar"
         jar="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/app/libs/Parse-1.5.1.jar"
         jumboMode="false"
@@ -79,12 +85,6 @@
         jumboMode="false"
         revision="20.0.0"
         sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
-    <item
-        dex="/Users/tzhmufl2/development/repositories/eSkate/app/build/intermediates/pre-dexed/debug/Parse-1.5.1-3445cfc0b9a3ec0e1d2c67bba07d3c2fa1eb7788.jar"
-        jar="/Users/tzhmufl2/development/repositories/eSkate/app/libs/Parse-1.5.1.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="3d645417e7780d44f32e29a3ec6b729b75aef26c"/>
     <item
         dex="/Users/tzhmufl2/AndroidStudioProjects/ParseTemplate/app/build/intermediates/pre-dexed/debug/aopalliance-1.0-379a82de8c64429814f95f341e8240235a95bb61.jar"
         jar="/Users/tzhmufl2/.gradle/caches/modules-2/files-2.1/aopalliance/aopalliance/1.0/235ba8b489512805ac13a8f9ea77a1ca5ebe3e8/aopalliance-1.0.jar"
