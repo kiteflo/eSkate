@@ -2,29 +2,23 @@ package com.sobag.parsetemplate.services;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.inject.Inject;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.sobag.parsetemplate.crappyhelpers.Counter;
-import com.sobag.parsetemplate.domain.Board;
+import com.sobag.parsetemplate.domain.Weapon;
 import com.sobag.parsetemplate.domain.Ride;
 import com.sobag.parsetemplate.domain.RideHolder;
 import com.sobag.parsetemplate.domain.RideImage;
 import com.sobag.parsetemplate.domain.User;
 import com.sobag.parsetemplate.domain.Waypoint;
-import com.sobag.parsetemplate.enums.GenericRequestCode;
 import com.sobag.parsetemplate.util.BitmapUtility;
 
 import org.json.JSONArray;
@@ -34,7 +28,6 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
@@ -75,16 +68,16 @@ public class ParseRequestService
      * Fetch available board descriptions from server...
      * @param requestListener
      */
-    public void fetchBoards(final RequestListener requestListener)
+    public void fetchWeapons(final RequestListener requestListener)
     {
         requestListener.handleStartRequest();
 
-        ParseQuery<Board> query = ParseQuery.getQuery("Board");
-        query.findInBackground(new FindCallback<Board>() {
+        ParseQuery<Weapon> query = ParseQuery.getQuery("Weapon");
+        query.findInBackground(new FindCallback<Weapon>() {
             @Override
-            public void done(List<Board> boards, ParseException e) {
+            public void done(List<Weapon> weapons, ParseException e) {
                 if (e == null) {
-                    requestListener.handleRequestResult(boards);
+                    requestListener.handleRequestResult(weapons);
                 }
                 else
                 {
@@ -115,12 +108,13 @@ public class ParseRequestService
         ride.setAvgSpeed(rideHolder.getAvgSpeed());
         ride.setMaxSpeed(rideHolder.getMaxSpeed());
         ride.setDistance(rideHolder.getDistance());
-        ride.getBoard().add(rideHolder.getBoard());
+        ride.getBoard().add(rideHolder.getWeapon());
         ride.setDuration(rideHolder.getDuration());
         if (rideHolder.getAddress() != null)
         {
             ride.setCity(rideHolder.getAddress().getLocality());
             ride.setCountry(rideHolder.getAddress().getCountryName());
+            ride.setCountryCode(rideHolder.getAddress().getCountryCode());
         }
         ride.setRideDate(new Date());
 
@@ -305,6 +299,10 @@ public class ParseRequestService
         });
     }
 
+    /**
+     * Find rides for user...
+     * @param requestListener
+     */
     public void fetchRidesForUser(final RequestListener requestListener)
     {
         requestListener.handleStartRequest();

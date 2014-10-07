@@ -12,29 +12,13 @@ import android.widget.TextView;
 
 //import com.bumptech.glide.Glide;
 import com.bumptech.glide.Glide;
-import com.makeramen.RoundedImageView;
-import com.parse.FindCallback;
-import com.parse.GetDataCallback;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseQuery;
 import com.sobag.parsetemplate.R;
-import com.sobag.parsetemplate.domain.Board;
 import com.sobag.parsetemplate.domain.Ride;
-import com.sobag.parsetemplate.domain.RideImage;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
 import com.sobag.parsetemplate.util.FontUtility;
 import com.sobag.parsetemplate.util.GlobalUtility;
 
-import org.joda.time.Hours;
-import org.joda.time.LocalDate;
-import org.joda.time.Minutes;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-
-import roboguice.util.Ln;
 
 public class RideListAdapter extends ArrayAdapter<Ride>
 {

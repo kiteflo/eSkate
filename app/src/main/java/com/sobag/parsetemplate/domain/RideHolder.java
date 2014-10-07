@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import roboguice.inject.ContextSingleton;
-
 /**
  * Group ride properties...
  */
@@ -36,7 +34,7 @@ public class RideHolder
     private double speed;
     private String mapImage;
     private Bitmap mapImageBitmap;
-    private Board board;
+    private Weapon weapon;
     private String duration;
     private Address address;
 
@@ -179,14 +177,14 @@ public class RideHolder
         this.endTime = endTime;
     }
 
-    public Board getBoard()
+    public Weapon getWeapon()
     {
-        return board;
+        return weapon;
     }
 
-    public void setBoard(Board board)
+    public void setWeapon(Weapon weapon)
     {
-        this.board = board;
+        this.weapon = weapon;
     }
 
     public String getDuration()

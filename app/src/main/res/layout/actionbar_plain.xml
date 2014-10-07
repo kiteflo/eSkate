@@ -32,6 +32,7 @@
         android:id="@+id/ab_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        style="@style/tv_actionbar_title"
         android:text="skating like a boss"
         />
 </RelativeLayout>

@@ -66,6 +66,8 @@
     <string name="title_activity_init_ride">Prepare ride...</string>
     <string name="activity_init_ride_board">SELECT YOUR WEAPON</string>
     <string name="but_next">next...</string>
+    <string name="prog_loading">Loading</string>
+    <string name="prog_fetchboards">Fetching vehicle list...</string>
 
     <!-- location page -->
     <string name="title_activity_location">Prepare ride...</string>
@@ -73,6 +75,10 @@
     <string name="but_start">start ride!</string>
     <string name="msg_location_not_available">Cant determine your geo position :(</string>
     <string name="subtitle_image">STARTPOINT IMAGE(S)</string>
+    <string name="prog_initializing">Initialize</string>
+    <string name="prog_position">Detecting your current location...</string>
+    <string name="prog_saving">Saving</string>
+    <string name="prog_save">Saving your ride...</string>
 
     <!-- riding activity -->
     <string name="title_activity_riding">eSkating in action...</string>

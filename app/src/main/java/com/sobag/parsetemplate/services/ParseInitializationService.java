@@ -1,7 +1,6 @@
 package com.sobag.parsetemplate.services;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -19,14 +18,14 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.sobag.parsetemplate.CommonActivity;
-import com.sobag.parsetemplate.domain.Board;
+import com.sobag.parsetemplate.domain.Badge;
+import com.sobag.parsetemplate.domain.Condition;
+import com.sobag.parsetemplate.domain.Weapon;
 import com.sobag.parsetemplate.domain.ClientUser;
 import com.sobag.parsetemplate.domain.Ride;
 import com.sobag.parsetemplate.domain.RideImage;
 import com.sobag.parsetemplate.domain.User;
 import com.sobag.parsetemplate.domain.Waypoint;
-import com.sobag.parsetemplate.util.PreferenceProps;
 import com.sobag.parsetemplate.R;
 import com.sobag.parsetemplate.util.SharedPreferencesUtility;
 
@@ -85,10 +84,12 @@ public class ParseInitializationService
 
         // register subclasses...
         ParseObject.registerSubclass(User.class);
-        ParseObject.registerSubclass(Board.class);
+        ParseObject.registerSubclass(Weapon.class);
         ParseObject.registerSubclass(Ride.class);
         ParseObject.registerSubclass(Waypoint.class);
         ParseObject.registerSubclass(RideImage.class);
+        ParseObject.registerSubclass(Badge.class);
+        ParseObject.registerSubclass(Condition.class);
 
         // actually parse does not provide a way of checking whether initialization failed
         // or not :( - so parse will always be initialized successfully right here...

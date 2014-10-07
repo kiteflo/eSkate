@@ -1,58 +1,26 @@
 package com.sobag.parsetemplate;
 
-import android.app.ActionBar;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.facebook.Session;
-import com.facebook.SessionState;
 import com.google.inject.Inject;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.parse.FindCallback;
-import com.parse.GetDataCallback;
-import com.parse.ParseException;
-import com.parse.ParseFacebookUtils;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
-import com.sobag.parsetemplate.domain.ClientUser;
 import com.sobag.parsetemplate.domain.Ride;
-import com.sobag.parsetemplate.domain.RideImage;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
 import com.sobag.parsetemplate.enums.GenericRequestCode;
-import com.sobag.parsetemplate.fb.FacebookHandler;
-import com.sobag.parsetemplate.lists.BoardListAdapter;
-import com.sobag.parsetemplate.lists.NavigationListAdapter;
 import com.sobag.parsetemplate.lists.RideListAdapter;
-import com.sobag.parsetemplate.lists.items.NavigationListItem;
 import com.sobag.parsetemplate.services.ParseRequestService;
 import com.sobag.parsetemplate.services.RequestListener;
 import com.sobag.parsetemplate.util.FontUtility;
 import com.sobag.parsetemplate.util.GlobalUtility;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import roboguice.inject.InjectView;
-import roboguice.util.Ln;
 
 public class RidesActivity extends CommonActivity
         implements RequestListener
@@ -85,6 +53,9 @@ public class RidesActivity extends CommonActivity
 
         // fetch rides...
         parseRequestService.fetchRidesForUser(this);
+
+        // set actionbar title...
+        super.getTvActionBar().setText("YOUR RIDES");
     }
 
     // ------------------------------------------------------------------------

@@ -60,6 +60,9 @@ public class CommonActivity extends RoboActivity
 
     private CommonActivity selfReference;
 
+    // action bar
+    private TextView tvActionBar;
+
     // sliding menu
     private SlidingMenu menu;
     private TextView tvUser;
@@ -75,6 +78,7 @@ public class CommonActivity extends RoboActivity
     private RelativeLayout rlRideNow;
     private RelativeLayout rlTotalDistance;
     private RelativeLayout rlMyTracks;
+    private RelativeLayout rlLogout;
 
     // ------------------------------------------------------------------------
     // common stuff...
@@ -96,6 +100,7 @@ public class CommonActivity extends RoboActivity
         tvTotal = (TextView)view.findViewById(R.id.tv_total);
         tvMyRides = (TextView)view.findViewById(R.id.tv_myrides);
         ivUser = (RoundedImageView)view.findViewById(R.id.iv_image);
+
         // action areas
         rlRideNow = (RelativeLayout)view.findViewById(R.id.rl_rideNow);
         rlRideNow.setOnClickListener(new RideNowAdapter());
@@ -103,6 +108,9 @@ public class CommonActivity extends RoboActivity
         rlTotalDistance.setOnClickListener(new TotalKilometersAdapter());
         rlMyTracks = (RelativeLayout)view.findViewById(R.id.rl_myTracks);
         rlMyTracks.setOnClickListener(new MyTracksAdapter());
+        rlLogout = (RelativeLayout)view.findViewById(R.id.rl_logout);
+        rlLogout.setOnClickListener(new LogoutAdapter());
+
 
         // apply fonts
         fontUtility.applyFontToComponent(tvUser,R.string.default_font,
@@ -156,17 +164,18 @@ public class CommonActivity extends RoboActivity
         actionBar.setDisplayShowHomeEnabled(false);
 
         // actionbar listeners...need to be set explicitly...
-        TextView yourTextView = (TextView)aactionBarView.findViewById(R.id.ab_title);
-        yourTextView.setTextColor(getResources().getColor(R.color.white));
+        tvActionBar = (TextView)aactionBarView.findViewById(R.id.ab_title);
+        fontUtility.applyFontToComponent(tvActionBar,R.string.special_font,
+                FontApplicableComponent.TEXT_VIEW);
+        /*String desiredFont = getString(R.string.second_font);
+        Typeface typeface = Typeface.createFromAsset(getAssets(),desiredFont);
+        yourTextView.setTypeface(typeface);*/
+
         fbImage = (ProfilePictureView)aactionBarView.findViewById(R.id.fb_image);
 
         // fetch facebook user...
         // init client user...fetch image etc...
         parseInitService.initClientUser(fbImage);
-
-        String desiredFont = getString(R.string.second_font);
-        Typeface typeface = Typeface.createFromAsset(getAssets(),desiredFont);
-        yourTextView.setTypeface(typeface);
 
         ImageView iv = (ImageView)aactionBarView.findViewById(R.id.ab_icon);
         iv.setOnClickListener(new ActionBarButtonCLickListener());
@@ -244,6 +253,20 @@ public class CommonActivity extends RoboActivity
         }
     }
 
+    private class LogoutAdapter implements View.OnClickListener
+    {
+        @Override
+        public void onClick(View v)
+        {
+            menu.toggle(true);
+
+            ParseUser.logOut();
+
+            Intent launchActivity = new Intent(selfReference,LaunchActivity.class);
+            startActivity(launchActivity);
+        }
+    }
+
     // ------------------------------------------------------------------------
     // inner classes
     // ------------------------------------------------------------------------
@@ -255,5 +278,20 @@ public class CommonActivity extends RoboActivity
         {
             menu.toggle(true);
         }
+    }
+
+    // ------------------------------------------------------------------------
+    // GETTER & SETTER
+    // ------------------------------------------------------------------------
+
+
+    public TextView getTvActionBar()
+    {
+        return tvActionBar;
+    }
+
+    public void setTvActionBar(TextView tvActionBar)
+    {
+        this.tvActionBar = tvActionBar;
     }
 }

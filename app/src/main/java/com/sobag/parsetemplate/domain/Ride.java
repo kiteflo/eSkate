@@ -1,11 +1,10 @@
 package com.sobag.parsetemplate.domain;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseRelation;
+import com.sobag.parsetemplate.enums.Discipline;
 
 import org.json.JSONArray;
 
@@ -23,6 +22,8 @@ public class Ride extends ParseObject
     // members
     // ------------------------------------------------------------------------
 
+    private Discipline discipline;
+
     private String title;
     private User user;
     private Waypoint startPoint;
@@ -36,10 +37,11 @@ public class Ride extends ParseObject
     private double distance;
     private double maxSpeed;
     private double avgSpeed;
-    private ParseRelation<Board> board;
+    private ParseRelation<Weapon> board;
     private String duration;
     private String city;
     private String country;
+    private String countryCode;
 
     // helper properties...
     private List<RideImage> images = new ArrayList<RideImage>();
@@ -192,7 +194,7 @@ public class Ride extends ParseObject
         put("rideDate",rideDate);
     }
 
-    public ParseRelation<Board> getBoard()
+    public ParseRelation<Weapon> getBoard()
     {
         return getRelation("board");
     }
@@ -225,5 +227,25 @@ public class Ride extends ParseObject
     public void setCountry(String country)
     {
         put("country",country);
+    }
+
+    public Discipline getDiscipline()
+    {
+        return Discipline.valueOf(getString("discipline"));
+    }
+
+    public void setDiscipline(Discipline discipline)
+    {
+        put("discipline",discipline.toString());
+    }
+
+    public String getCountryCode()
+    {
+        return getString("countryCode");
+    }
+
+    public void setCountryCode(String countryCode)
+    {
+        put("countryCode",countryCode);
     }
 }

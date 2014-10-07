@@ -46,13 +46,4 @@
         custom:buttonIcon="@drawable/lock_161"
         custom:showIcon="false"
         />
-
-    <ProgressBar
-        android:tag="progressBar"
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone"/>
 </RelativeLayout>

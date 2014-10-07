@@ -1,7 +1,12 @@
 package com.sobag.parsetemplate;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -9,6 +14,10 @@ import com.crashlytics.android.Crashlytics;
 import com.google.inject.Inject;
 import com.sobag.parsetemplate.services.InitializationListener;
 import com.sobag.parsetemplate.services.ParseInitializationService;
+import com.sobag.parsetemplate.util.DataGenerationUtility;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContextSingleton;
@@ -27,8 +36,8 @@ public class SplashActivity extends RoboActivity
     @Inject
     ParseInitializationService parseInitializationService;
 
-    @InjectView(tag = "progressBar")
-    ProgressBar progressBar = null;
+    private ProgressBar progressBar = null;
+
 
     // ------------------------------------------------------------------------
     // public usage
@@ -45,6 +54,16 @@ public class SplashActivity extends RoboActivity
 
         // init parse...
         parseInitializationService.init();
+
+        // progressbar...needs special treatment
+        progressBar = (ProgressBar)findViewById(R.id.progressBar);
+
+        // --------------------------------------------------------------------
+        // EXPERIMENTAL & DATA GENERATION SECTION
+        // --------------------------------------------------------------------
+
+        // printKeyHash();
+        DataGenerationUtility.generateBadges(this);
     }
 
     // ------------------------------------------------------------------------
@@ -54,7 +73,10 @@ public class SplashActivity extends RoboActivity
     @Override
     public void handleStartInitialization()
     {
-        progressBar.setVisibility(View.VISIBLE);
+        if (progressBar != null)
+        {
+            progressBar.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -63,7 +85,10 @@ public class SplashActivity extends RoboActivity
         Ln.v("Parse initialized successfully!");
 
         // hide loading indicator...
-        progressBar.setVisibility(View.GONE);
+        if (progressBar != null)
+        {
+            progressBar.setVisibility(View.GONE);
+        }
 
         boolean isVirgin = parseInitializationService.checkIfFirstTimeAccess();
 
@@ -102,5 +127,23 @@ public class SplashActivity extends RoboActivity
         startActivity(errorIntent);
 
         finish();
+    }
+
+    private void printKeyHash(){
+        // Add code to print out the key hash
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.sobag.parsetemplate",
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.d("KeyHash:", e.toString());
+        } catch (NoSuchAlgorithmException e) {
+            Log.d("KeyHash:", e.toString());
+        }
     }
 }

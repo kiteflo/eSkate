@@ -1,5 +1,7 @@
 package com.sobag.parsetemplate;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,11 +14,11 @@ import android.widget.Toast;
 
 import com.google.inject.Inject;
 import com.makeramen.RoundedImageView;
-import com.sobag.parsetemplate.domain.Board;
+import com.sobag.parsetemplate.domain.Weapon;
 import com.sobag.parsetemplate.domain.RideHolder;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
 import com.sobag.parsetemplate.enums.GenericRequestCode;
-import com.sobag.parsetemplate.lists.BoardListAdapter;
+import com.sobag.parsetemplate.lists.WeaponListAdapter;
 import com.sobag.parsetemplate.services.ParseRequestService;
 import com.sobag.parsetemplate.services.RequestListener;
 import com.sobag.parsetemplate.util.FontUtility;
@@ -33,8 +35,7 @@ public class InitRideActivity extends CommonActivity
     // members
     // ------------------------------------------------------------------------
 
-    @InjectView(tag = "progressBar")
-    ProgressBar progressBar;
+    private ProgressDialog progressDialog = null;
 
     @Inject
     RideHolder rideHolder;
@@ -69,13 +70,13 @@ public class InitRideActivity extends CommonActivity
                 FontApplicableComponent.TEXT_VIEW);
 
         // fetch boards...
-        parseRequestService.fetchBoards(this);
+        parseRequestService.fetchWeapons(this);
 
     }
 
     public void onNext(View view)
     {
-        if (rideHolder.getBoard() == null)
+        if (rideHolder.getWeapon() == null)
         {
             Toast.makeText(this,getString(R.string.msg_select_board),Toast.LENGTH_LONG).show();
         }
@@ -91,8 +92,9 @@ public class InitRideActivity extends CommonActivity
     // ------------------------------------------------------------------------
 
     @Override
-    public void handleStartRequest() {
-        progressBar.setVisibility(View.VISIBLE);
+    public void handleStartRequest()
+    {
+        progressDialog = ProgressDialog.show(this, getString(R.string.prog_loading), getString(R.string.prog_fetchboards), true);
     }
 
     @Override
@@ -100,12 +102,12 @@ public class InitRideActivity extends CommonActivity
     {
         Ln.d("Result: " + result.size());
         // display loading indicator...
-        progressBar.setVisibility(View.GONE);
+        progressDialog.hide();
 
-        final List<Board> boardList = (List<Board>)result;
+        final List<Weapon> weaponList = (List<Weapon>)result;
 
-        BoardListAdapter bla = new BoardListAdapter(getApplicationContext(),
-                boardList, fontUtility);
+        WeaponListAdapter bla = new WeaponListAdapter(getApplicationContext(),
+                weaponList, fontUtility);
 
         // fetch UI container and mixin contents...
         ListView lvBoards = (ListView)findViewById(R.id.lv_boards);
@@ -137,8 +139,8 @@ public class InitRideActivity extends CommonActivity
                 currentlySelectedItem = view;
 
                 // set board...
-                Board board = boardList.get(position);
-                rideHolder.setBoard(board);
+                Weapon weapon = weaponList.get(position);
+                rideHolder.setWeapon(weapon);
             }
         });
     }
@@ -153,13 +155,13 @@ public class InitRideActivity extends CommonActivity
     public void handleParseRequestError(Exception ex)
     {
         // display loading indicator...
-        progressBar.setVisibility(View.GONE);
+        progressDialog.hide();
     }
 
     @Override
     public void handleParseRequestSuccess()
     {
         // display loading indicator...
-        progressBar.setVisibility(View.GONE);
+        progressDialog.hide();
     }
 }

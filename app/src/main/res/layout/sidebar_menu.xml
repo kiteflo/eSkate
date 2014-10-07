@@ -120,6 +120,7 @@
             android:paddingLeft="10dp"/>
     </RelativeLayout>
     <RelativeLayout
+        android:id="@+id/rl_logout"
         android:background="@drawable/grey_selector"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

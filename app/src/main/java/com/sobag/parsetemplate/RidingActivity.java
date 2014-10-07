@@ -1,16 +1,14 @@
 package com.sobag.parsetemplate;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.Shader;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -35,7 +33,6 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.facebook.Session;
-import com.facebook.SessionState;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -49,7 +46,6 @@ import com.mobsandgeeks.saripaar.Rule;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.Required;
 import com.parse.ParseException;
-import com.sobag.parsetemplate.domain.Ride;
 import com.sobag.parsetemplate.domain.RideHolder;
 import com.sobag.parsetemplate.enums.FontApplicableComponent;
 import com.sobag.parsetemplate.enums.GenericRequestCode;
@@ -72,6 +68,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import at.markushi.ui.CircleButton;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 
@@ -89,8 +86,7 @@ public class RidingActivity extends CommonCameraActivity
     @Inject
     ParseRequestService parseRequestService;
 
-    @InjectView(tag = "progressBar")
-    ProgressBar progressBar;
+    private ProgressDialog progressDialog = null;
 
     @Inject
     FontUtility fontUtility;
@@ -155,7 +151,7 @@ public class RidingActivity extends CommonCameraActivity
     RelativeLayout start_button;
     @InjectView(tag = "view_lock_protected")
     View viewLockProtected;
-
+    CircleButton buttonLock = null;
 
     private GoogleMap map = null;
     private LocationManager locationManager = null;
@@ -222,8 +218,8 @@ public class RidingActivity extends CommonCameraActivity
                 FontApplicableComponent.TEXT_VIEW);
         fontUtility.applyFontToComponent(tvDescribe,R.string.default_font,
                 FontApplicableComponent.TEXT_VIEW);
-        fontUtility.applyFontToComponent(etRideTitle,R.string.default_font,
-                FontApplicableComponent.TEXT_VIEW);
+
+
 
         // init map & location manager...
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.frag_map))
@@ -231,7 +227,8 @@ public class RidingActivity extends CommonCameraActivity
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         initMapToCurrentPosition();
 
-        custom_button_protected.setOnTouchListener(new View.OnTouchListener()
+        buttonLock = (CircleButton)findViewById(R.id.button_lock);
+        buttonLock.setOnTouchListener(new View.OnTouchListener()
         {
             Animation animFadein = null;
             @Override
@@ -257,6 +254,7 @@ public class RidingActivity extends CommonCameraActivity
                     {
                         custom_button_protected.setVisibility(View.GONE);
                         custom_button.setVisibility(View.VISIBLE);
+                        buttonLock.setVisibility(View.GONE);
                     }
                     else
                     {
@@ -438,6 +436,7 @@ public class RidingActivity extends CommonCameraActivity
 
         start_button.setVisibility(View.GONE);
         custom_button_protected.setVisibility(View.VISIBLE);
+        buttonLock.setVisibility(View.VISIBLE);
     }
 
     public void onTakePhoto(View view)
@@ -552,6 +551,12 @@ public class RidingActivity extends CommonCameraActivity
                 parseRequestService.saveRide(new SaveRideRequest(),rideHolder);
             }
         }
+        // plain save...
+        else
+        {
+            // trigger parse save operation...
+            parseRequestService.saveRide(new SaveRideRequest(),rideHolder);
+        }
     }
 
     public void onPause(View view)
@@ -575,6 +580,7 @@ public class RidingActivity extends CommonCameraActivity
             tvPause.setText(getString(R.string.but_pause));
             custom_button.setVisibility(View.INVISIBLE);
             custom_button_protected.setVisibility(View.VISIBLE);
+            buttonLock.setVisibility(View.VISIBLE);
             viewLockProtected.setVisibility(View.INVISIBLE);
             timerUtility.startTimer(tvTimer);
 
@@ -599,7 +605,7 @@ public class RidingActivity extends CommonCameraActivity
         applyNetworkCarrierSettings();
 
         // show progressbar...
-        progressBar.setVisibility(View.VISIBLE);
+        progressDialog = ProgressDialog.show(this, getString(R.string.prog_initializing), getString(R.string.prog_position), true);
     }
 
     private File createImageFile() throws IOException
@@ -629,7 +635,7 @@ public class RidingActivity extends CommonCameraActivity
     public void onLocationChanged(Location location)
     {
         // hide progressbar....
-        progressBar.setVisibility(View.GONE);
+        progressDialog.hide();
 
         LatLng position = new LatLng(location.getLatitude(),location.getLongitude());
 
@@ -1017,8 +1023,8 @@ public class RidingActivity extends CommonCameraActivity
                     int yPos = imageHeight + footerHeight/2;
                     int xPos = imageWidth -padding -50;
 
-                    Bitmap board = BitmapFactory.decodeByteArray(rideHolder.getBoard().getImage().getData(), 0,
-                            rideHolder.getBoard().getImage().getData().length);
+                    Bitmap board = BitmapFactory.decodeByteArray(rideHolder.getWeapon().getImage().getData(), 0,
+                            rideHolder.getWeapon().getImage().getData().length);
 
                     // keep aspect ration
                     board = BitmapUtility.createSquaredBitmap(board);
@@ -1122,14 +1128,14 @@ public class RidingActivity extends CommonCameraActivity
         @Override
         public void handleStartRequest()
         {
-            progressBar.setVisibility(View.VISIBLE);
+            progressDialog = ProgressDialog.show(selfReference, getString(R.string.prog_saving), getString(R.string.prog_save), true);
         }
 
         // should not be called...
         @Override
         public void handleRequestResult(List result)
         {
-            progressBar.setVisibility(View.GONE);
+            progressDialog.hide();
         }
 
         @Override
@@ -1141,7 +1147,7 @@ public class RidingActivity extends CommonCameraActivity
         @Override
         public void handleParseRequestError(Exception ex)
         {
-            progressBar.setVisibility(View.GONE);
+            progressDialog.hide();
 
             Toast.makeText(getApplicationContext(),"Saved ride...",Toast.LENGTH_LONG).show();
         }
@@ -1149,7 +1155,7 @@ public class RidingActivity extends CommonCameraActivity
         @Override
         public void handleParseRequestSuccess()
         {
-            progressBar.setVisibility(View.GONE);
+            progressDialog.hide();
 
             Toast.makeText(getApplicationContext(),"Saved ride...",Toast.LENGTH_LONG).show();
 

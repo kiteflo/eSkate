@@ -3,12 +3,13 @@ package com.sobag.parsetemplate.domain;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.sobag.parsetemplate.enums.Discipline;
 
 /**
  * Created by tzhmufl2 on 08.07.14.
  */
-@ParseClassName("Board")
-public class Board extends ParseObject
+@ParseClassName("Weapon")
+public class Weapon extends ParseObject
 {
     // ------------------------------------------------------------------------
     // members
@@ -17,13 +18,14 @@ public class Board extends ParseObject
     private String title;
     private String subTitle;
     private ParseFile image;
+    private Discipline discipline;
 
     // ------------------------------------------------------------------------
     // constructors
     // ------------------------------------------------------------------------
 
     // required by Parse SDK
-    public Board(){}
+    public Weapon(){}
 
     // ------------------------------------------------------------------------
     // GETTER & SETTER
@@ -54,4 +56,14 @@ public class Board extends ParseObject
     }
 
     public void resetImage() {image = null;}
+
+    public Discipline getDiscipline()
+    {
+        return Discipline.valueOf(getString("discipline"));
+    }
+
+    public void setDiscipline(Discipline discipline)
+    {
+        put("discipline",discipline.toString());
+    }
 }
